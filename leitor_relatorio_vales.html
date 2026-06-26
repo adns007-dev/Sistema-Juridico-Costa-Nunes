@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leitor de Relatório de Vales – Costa Nunes Advogados</title>
+
+<!-- PDF.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<!-- ExcelJS -->
+<script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;600;700&display=swap');
+
+  :root {
+    --preto:     #0a0a0a;
+    --ouro:      #c9a84c;
+    --ouro-cla:  #f5edd6;
+    --creme:     #f5f3ee;
+    --creme-med: #ede9e0;
+    --texto:     #2c2c2c;
+    --texto-sub: #6b6560;
+    --borda:     #dcd7cc;
+    --verde:     #2d6a2d;
+    --verde-cla: #e8f5e8;
+    --branco:    #ffffff;
+    --fonte:     'IBM Plex Sans', system-ui, sans-serif;
+    --mono:      'IBM Plex Mono', monospace;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--fonte);
+    background: var(--creme);
+    color: var(--texto);
+    min-height: 100vh;
+  }
+
+  /* TOPO */
+  header {
+    background: var(--preto);
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    border-bottom: 2px solid var(--ouro);
+    min-height: 64px;
+  }
+  .header-esq { display: flex; align-items: center; gap: 14px; }
+  .logo-marca {
+    width: 36px; height: 36px;
+    background: var(--ouro);
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .logo-marca svg { width: 20px; height: 20px; }
+  header h1 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: .95rem; font-weight: 700;
+    color: var(--branco); letter-spacing: .03em;
+  }
+  header p { font-size: .72rem; color: #a89878; margin-top: 2px; font-family: var(--fonte); }
+  .header-badge {
+    font-family: Georgia, serif;
+    font-size: .64rem; font-weight: 700;
+    background: var(--ouro);
+    color: var(--preto);
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: .06em;
+    white-space: nowrap;
+  }
+
+  /* MAIN */
+  main { max-width: 860px; margin: 0 auto; padding: 32px 20px 60px; }
+
+  /* CARD */
+  .card {
+    background: var(--branco);
+    border: 1px solid var(--borda);
+    border-radius: 6px;
+    padding: 24px 28px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.05);
+  }
+  .card-title {
+    font-size: .65rem; font-weight: 700; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--ouro);
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--borda);
+    padding-bottom: 10px;
+  }
+
+  .config-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 560px) { .config-grid { grid-template-columns: 1fr; } }
+
+  label { display: block; font-size: .78rem; font-weight: 600; color: var(--texto); margin-bottom: 5px; letter-spacing: .01em; }
+  input[type="month"], input[type="text"] {
+    width: 100%; padding: 9px 12px;
+    border: 1.5px solid var(--borda); border-radius: 4px;
+    font-size: .88rem; color: var(--texto);
+    transition: border-color .15s;
+    font-family: var(--fonte);
+    background: var(--creme);
+  }
+  input[type="month"]:focus, input[type="text"]:focus {
+    outline: none; border-color: var(--ouro); background: var(--branco);
+  }
+  .hint { font-size: .7rem; color: var(--texto-sub); margin-top: 4px; }
+
+  /* UPLOAD */
+  .drop-zone {
+    border: 2px dashed var(--borda);
+    border-radius: 6px;
+    padding: 36px 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color .2s, background .2s;
+    position: relative;
+    background: var(--creme);
+  }
+  .drop-zone:hover, .drop-zone.drag-over {
+    border-color: var(--ouro);
+    background: var(--ouro-cla);
+  }
+  .drop-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .drop-icon {
+    width: 48px; height: 48px; margin: 0 auto 12px;
+    background: var(--ouro-cla); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    border: 1.5px solid var(--ouro);
+  }
+  .drop-icon svg { width: 22px; height: 22px; stroke: var(--ouro); fill: none; }
+  .drop-zone p { font-size: .88rem; color: var(--texto-sub); }
+  .drop-zone strong { color: var(--texto); }
+  #nome-arquivo {
+    margin-top: 10px; font-size: .78rem;
+    color: var(--verde); font-weight: 600; font-family: var(--mono);
+    min-height: 18px;
+  }
+
+  /* BOTAO PROCESSAR */
+  #btn-processar {
+    width: 100%; padding: 14px;
+    background: var(--preto); color: var(--branco);
+    border: 2px solid var(--preto); border-radius: 4px;
+    font-size: .88rem; font-weight: 700; letter-spacing: .07em;
+    text-transform: uppercase;
+    cursor: pointer; margin-top: 8px;
+    font-family: var(--fonte);
+    transition: background .15s, color .15s, border-color .15s;
+  }
+  #btn-processar:hover:not(:disabled) {
+    background: var(--ouro); border-color: var(--ouro); color: var(--preto);
+  }
+  #btn-processar:disabled { background: var(--creme-med); border-color: var(--borda); color: var(--texto-sub); cursor: not-allowed; }
+
+  /* PROGRESSO */
+  #painel-progresso { display: none; margin-top: 20px; }
+  .progresso-etapas { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+  .etapa { display: flex; align-items: center; gap: 10px; font-size: .82rem; opacity: .35; transition: opacity .3s; }
+  .etapa.ativa { opacity: 1; }
+  .etapa.feita { opacity: 1; color: var(--verde); }
+  .etapa.erro  { opacity: 1; color: #c0392b; }
+  .etapa-icone {
+    width: 22px; height: 22px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: .68rem; flex-shrink: 0; font-weight: 700;
+    background: var(--borda); color: var(--texto-sub);
+    transition: background .3s, color .3s;
+  }
+  .etapa.ativa .etapa-icone { background: var(--ouro); color: var(--preto); }
+  .etapa.feita .etapa-icone { background: var(--verde); color: #fff; }
+  .etapa.erro  .etapa-icone { background: #c0392b; color: #fff; }
+
+  .barra-wrap { background: var(--borda); border-radius: 2px; height: 4px; overflow: hidden; }
+  .barra-fill { height: 100%; background: var(--ouro); width: 0%; transition: width .4s ease; border-radius: 2px; }
+  #pct-texto { font-size: .7rem; color: var(--texto-sub); margin-top: 5px; text-align: right; font-family: var(--mono); }
+
+  /* LOG */
+  #log-box {
+    background: var(--preto);
+    border: 1px solid #333;
+    border-radius: 4px;
+    padding: 12px 14px;
+    font-size: .72rem; font-family: var(--mono);
+    color: #ccc;
+    max-height: 180px; overflow-y: auto;
+    margin-top: 14px;
+    display: none;
+  }
+  #log-box p { margin-bottom: 3px; line-height: 1.5; }
+  #log-box p.warn { color: var(--ouro); }
+  #log-box p.erro { color: #e74c3c; }
+  #log-box p.ok   { color: #5cb85c; }
+
+  /* RESULTADO */
+  #painel-resultado { display: none; margin-top: 20px; }
+  .resultado-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .resultado-header h3 { font-size: .98rem; color: var(--texto); font-family: Georgia, serif; }
+  .resultado-header p  { font-size: .78rem; color: var(--texto-sub); margin-top: 3px; }
+
+  #btn-baixar {
+    padding: 10px 22px;
+    background: var(--verde); color: var(--branco);
+    border: 2px solid var(--verde); border-radius: 4px;
+    font-size: .82rem; font-weight: 700; cursor: pointer;
+    white-space: nowrap; letter-spacing: .04em; text-transform: uppercase;
+    font-family: var(--fonte);
+    transition: background .15s, color .15s;
+  }
+  #btn-baixar:hover { background: var(--branco); color: var(--verde); }
+
+  .resumo-cards {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 12px; margin-top: 16px;
+  }
+  @media (max-width: 560px) { .resumo-cards { grid-template-columns: 1fr; } }
+
+  .resumo-card {
+    border-radius: 6px; padding: 14px 16px;
+    border: 1px solid var(--borda);
+  }
+  .resumo-card .rc-label { font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 6px; }
+  .resumo-card .rc-valor { font-size: 1.1rem; font-weight: 700; font-family: var(--mono); }
+  .resumo-card .rc-sub   { font-size: .68rem; color: var(--texto-sub); margin-top: 3px; font-family: var(--mono); }
+
+  .rc-azul  { background: var(--ouro-cla); border-color: #e0c87a; }
+  .rc-azul  .rc-label { color: #7a5c00; }
+  .rc-azul  .rc-valor { color: var(--texto); }
+
+  .rc-amar  { background: var(--creme-med); border-color: var(--borda); }
+  .rc-amar  .rc-label { color: var(--texto-sub); }
+  .rc-amar  .rc-valor { color: var(--texto); }
+
+  .rc-verde { background: var(--verde-cla); border-color: #8bc48b; }
+  .rc-verde .rc-label { color: var(--verde); }
+  .rc-verde .rc-valor { color: var(--verde); }
+
+  /* LEGENDA */
+  .legenda { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 14px; }
+  .leg-item { display: flex; align-items: center; gap: 6px; font-size: .73rem; color: var(--texto-sub); }
+  .leg-cor { width: 14px; height: 14px; border-radius: 2px; border: 1px solid #ccc; flex-shrink: 0; }
+
+  /* AVISOS */
+  .aviso-box {
+    background: #fff8e1; border: 1px solid var(--ouro);
+    border-radius: 5px; padding: 12px 14px;
+    font-size: .8rem; color: #7a5c00;
+    margin-top: 14px; display: none;
+  }
+  .aviso-box ul { margin-top: 6px; padding-left: 16px; }
+  .aviso-box li { margin-bottom: 3px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-esq">
+    <div class="logo-marca">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+        <polyline points="14 2 14 8 20 8"/>
+        <line x1="16" y1="13" x2="8" y2="13"/>
+        <line x1="16" y1="17" x2="8" y2="17"/>
+        <polyline points="10 9 9 9 8 9"/>
+      </svg>
+    </div>
+    <div>
+      <h1>Leitor de Relatório de Vales</h1>
+      <p>Costa Nunes Advogados Associados — Processamento VA/VA2 (ECT)</p>
+    </div>
+  </div>
+  <span class="header-badge">OAB/GO 1336</span>
+</header>
+
+<main>
+
+  <!-- CONFIGURAÇÃO -->
+  <div class="card">
+    <div class="card-title">Configuração</div>
+    <div class="config-grid">
+      <div>
+        <label for="data-fim">Data limite do relatório</label>
+        <input type="month" id="data-fim" value="2017-11" max="2030-12">
+        <p class="hint">Meses após essa data serão ignorados na planilha.</p>
+      </div>
+      <div>
+        <label for="dr-se">Superintendência (DR/SE)</label>
+        <input type="text" id="dr-se" value="SUPERINTENDENCIA ESTADUAL GO" placeholder="Ex: SUPERINTENDENCIA ESTADUAL GO">
+        <p class="hint">Apenas informativo — aparece na planilha.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- UPLOAD -->
+  <div class="card">
+    <div class="card-title">Relatório de Empregado por Rubrica e Período</div>
+    <div class="drop-zone" id="drop-zone">
+      <input type="file" id="input-pdf" accept=".pdf">
+      <div class="drop-icon">
+        <svg viewBox="0 0 24 24" stroke-width="1.8">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="17 8 12 3 7 8"/>
+          <line x1="12" y1="3" x2="12" y2="15"/>
+        </svg>
+      </div>
+      <p><strong>Arraste o PDF aqui</strong> ou clique para selecionar</p>
+      <p style="font-size:.75rem;color:#999;margin-top:4px">Relatório "Versão Congelada – Folha Final Tipo 1" (rubricas 057060 e 057040)</p>
+      <div id="nome-arquivo"></div>
+    </div>
+
+    <button id="btn-processar" disabled>Selecione um PDF para processar</button>
+  </div>
+
+  <!-- PROGRESSO -->
+  <div id="painel-progresso" class="card">
+    <div class="card-title">Processando</div>
+    <div class="progresso-etapas">
+      <div class="etapa" id="etapa-1">
+        <div class="etapa-icone" id="ic-1">1</div>
+        <span>Lendo o PDF e preparando páginas…</span>
+      </div>
+      <div class="etapa" id="etapa-2">
+        <div class="etapa-icone" id="ic-2">2</div>
+        <span>Extraindo texto do PDF (modo nativo)…</span>
+      </div>
+      <div class="etapa" id="etapa-3">
+        <div class="etapa-icone" id="ic-3">3</div>
+        <span>Consolidando dados e aplicando tabelas históricas…</span>
+      </div>
+      <div class="etapa" id="etapa-4">
+        <div class="etapa-icone" id="ic-4">4</div>
+        <span>Gerando planilha Excel…</span>
+      </div>
+    </div>
+    <div class="barra-wrap"><div class="barra-fill" id="barra"></div></div>
+    <div id="pct-texto">0%</div>
+    <div id="log-box"></div>
+  </div>
+
+  <!-- RESULTADO -->
+  <div id="painel-resultado" class="card">
+    <div class="resultado-header">
+      <div>
+        <h3 id="res-nome">—</h3>
+        <p id="res-periodo">—</p>
+      </div>
+      <button id="btn-baixar">⬇ Baixar Excel</button>
+    </div>
+
+    <div class="resumo-cards">
+      <div class="resumo-card rc-azul">
+        <div class="rc-label">VA Total (057060)</div>
+        <div class="rc-valor" id="res-060">R$ —</div>
+        <div class="rc-sub" id="res-060-n">— registros</div>
+      </div>
+      <div class="resumo-card rc-amar">
+        <div class="rc-label">VA II Total (057040)</div>
+        <div class="rc-valor" id="res-040">R$ —</div>
+        <div class="rc-sub" id="res-040-n">— registros</div>
+      </div>
+      <div class="resumo-card rc-verde">
+        <div class="rc-label">Total Combinado</div>
+        <div class="rc-valor" id="res-total">R$ —</div>
+        <div class="rc-sub" id="res-linhas">— meses</div>
+      </div>
+    </div>
+
+    <div class="legenda">
+      <div class="leg-item"><div class="leg-cor" style="background:#FFF2CC"></div> Estimado (tabelas faciais ECT)</div>
+      <div class="leg-item"><div class="leg-cor" style="background:#E2EFDA"></div> Inferido por continuidade</div>
+      <div class="leg-item"><div class="leg-cor" style="background:#EBF3FB"></div> Real (folha de pagamento)</div>
+    </div>
+
+    <div class="aviso-box" id="aviso-box">
+      <strong>⚠ Atenção — meses não resolvidos:</strong>
+      <ul id="aviso-lista"></ul>
+    </div>
+  </div>
+
+</main>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════════
+// CONFIGURAÇÃO GLOBAL
+// ═══════════════════════════════════════════════════════════════════════════
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+// ═══════════════════════════════════════════════════════════════════════════
+// TABELAS HISTÓRICAS (ECT/DGEP/CEGEP/GBEN) — 07/1994 a 12/2001
+// ═══════════════════════════════════════════════════════════════════════════
+function buildFacialVA() {
+  const t = {};
+  const f = (meses, ano, v) => meses.forEach(m => t[`${String(m).padStart(2,'0')}/${ano}`] = v);
+  f([7,8,9,10,11,12], 1994, 3.90);
+  f([1,2,3,4,5,6,7,8,9,10,11], 1995, 5.70); f([12], 1995, 6.32);
+  f([1,2,3,4,5,6,7,8,9,10,11,12], 1996, 6.32);
+  f([1,2,3,4,5,6,7], 1997, 7.00); f([8,9,10,11,12], 1997, 7.50);
+  f([1,2,3,4,5,6,7], 1998, 7.50); f([8,9,10,11,12], 1998, 8.00);
+  f([1,2,3,4,5,6,7], 1999, 8.00); f([8,9,10,11,12], 1999, 8.50);
+  f([1,2,3,4,5,6,7], 2000, 8.50); f([8,9,10,11,12], 2000, 9.00);
+  f([1,2,3,4,5,6,7], 2001, 9.00); f([8,9,10,11,12], 2001, 9.50);
+  return t;
+}
+
+function buildFacialVA2() {
+  const t = {};
+  const f = (meses, ano, v, mult) => meses.forEach(m => t[`${String(m).padStart(2,'0')}/${ano}`] = {v, mult});
+  f([2,3,4,5,6,7], 1998, 7.50, 4);  f([8,9,10,11,12], 1998, 10.00, 4);
+  f([1,2,3,4,5,6,7,8,9,10,11,12], 1999, 10.00, 4);
+  f([1,2,3,4,5,6,7], 2000, 10.00, 4); f([8,9,10,11,12], 2000, 11.25, 4);
+  f([1,2,3,4,5,6,7], 2001, 11.25, 4); f([8,9,10,11,12], 2001, 9.50, 5);
+  return t;
+}
+
+const FACIAL_VA  = buildFacialVA();
+const FACIAL_VA2 = buildFacialVA2();
+
+// ═══════════════════════════════════════════════════════════════════════════
+// UTILITÁRIOS
+// ═══════════════════════════════════════════════════════════════════════════
+function sortKey(ma) {
+  const [m, y] = ma.split('/');
+  return parseInt(y) * 100 + parseInt(m);
+}
+
+function mesAnterior(ma) {
+  const [m, y] = ma.split('/').map(Number);
+  const d = new Date(y, m - 1 - 1, 1);
+  return `${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+}
+
+function mesPosterior(ma) {
+  const [m, y] = ma.split('/').map(Number);
+  const d = new Date(y, m - 1 + 1, 1);
+  return `${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+}
+
+function intervaloMeses(maInicio, maFim) {
+  const meses = [];
+  let [m, y] = maInicio.split('/').map(Number);
+  const [mf, yf] = maFim.split('/').map(Number);
+  while (y < yf || (y === yf && m <= mf)) {
+    meses.push(`${String(m).padStart(2,'0')}/${y}`);
+    m++; if (m > 12) { m = 1; y++; }
+  }
+  return meses;
+}
+
+function brCurrency(v) {
+  return 'R$ ' + v.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// UI HELPERS
+// ═══════════════════════════════════════════════════════════════════════════
+const logBox  = document.getElementById('log-box');
+const barFill = document.getElementById('barra');
+const pctTxt  = document.getElementById('pct-texto');
+
+function log(msg, tipo='') {
+  logBox.style.display = 'block';
+  const p = document.createElement('p');
+  if (tipo) p.className = tipo;
+  p.textContent = msg;
+  logBox.appendChild(p);
+  logBox.scrollTop = logBox.scrollHeight;
+}
+
+function setProgress(pct, msg='') {
+  barFill.style.width = pct + '%';
+  pctTxt.textContent  = Math.round(pct) + '%' + (msg ? ' — ' + msg : '');
+}
+
+function setEtapa(n, estado) { // estado: 'ativa' | 'feita' | 'erro'
+  const el = document.getElementById(`etapa-${n}`);
+  const ic = document.getElementById(`ic-${n}`);
+  el.className = 'etapa ' + estado;
+  ic.textContent = estado === 'feita' ? '✓' : estado === 'erro' ? '✗' : n;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// UPLOAD
+// ═══════════════════════════════════════════════════════════════════════════
+let arquivoPDF = null;
+const dropZone  = document.getElementById('drop-zone');
+const inputPDF  = document.getElementById('input-pdf');
+const btnProc   = document.getElementById('btn-processar');
+const nomeArq   = document.getElementById('nome-arquivo');
+
+inputPDF.addEventListener('change', e => {
+  if (e.target.files[0]) selecionarArquivo(e.target.files[0]);
+});
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault(); dropZone.classList.remove('drag-over');
+  if (e.dataTransfer.files[0]) selecionarArquivo(e.dataTransfer.files[0]);
+});
+
+function selecionarArquivo(file) {
+  if (!file.name.toLowerCase().endsWith('.pdf')) {
+    alert('Selecione um arquivo PDF.'); return;
+  }
+  arquivoPDF = file;
+  nomeArq.textContent = `✓ ${file.name} (${(file.size/1024/1024).toFixed(1)} MB)`;
+  btnProc.disabled = false;
+  btnProc.textContent = 'Processar PDF e Gerar Excel';
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// PIPELINE PRINCIPAL
+// ═══════════════════════════════════════════════════════════════════════════
+btnProc.addEventListener('click', async () => {
+  if (!arquivoPDF) return;
+
+  // Reset UI
+  btnProc.disabled = true;
+  btnProc.textContent = 'Processando…';
+  document.getElementById('painel-progresso').style.display = 'block';
+  document.getElementById('painel-resultado').style.display = 'none';
+  document.getElementById('aviso-box').style.display = 'none';
+  logBox.innerHTML = '';
+  logBox.style.display = 'none';
+  [1,2,3,4].forEach(n => setEtapa(n, ''));
+  setProgress(0);
+
+  // Ler configuração de data limite
+  const dataLimInput = document.getElementById('data-fim').value; // "YYYY-MM"
+  let limAnno = 9999, limMes = 12;
+  if (dataLimInput) {
+    const [y, m] = dataLimInput.split('-').map(Number);
+    limAnno = y; limMes = m;
+  }
+  const dataLimMaStr = `${String(limMes).padStart(2,'0')}/${limAnno}`;
+
+  try {
+    // ── ETAPA 1: Renderizar PDF ──────────────────────────────────────────
+    setEtapa(1, 'ativa');
+    setProgress(2, 'Lendo PDF…');
+    log('Carregando PDF…');
+
+    const arrayBuffer = await arquivoPDF.arrayBuffer();
+    const pdfDoc = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    const totalPags = pdfDoc.numPages;
+    log(`PDF carregado: ${totalPags} páginas.`);
+    setProgress(5);
+    setEtapa(1, 'feita');
+
+    // ── ETAPA 2: Extração de texto via PDF.js (getTextContent) ──────────
+    setEtapa(2, 'ativa');
+    log('Extraindo texto do PDF… (modo nativo, sem OCR)');
+
+    const PAT_RUB  = /Rubrica[^0-9]*?(0\d{5})/i;
+    const PAT_EMP  = /(\d{7,8})\s+([A-ZÁÉÍÓÚÂÊÎÔÛÃÕÀÇ][A-ZÁÉÍÓÚÂÊÎÔÛÃÕÀÇa-záéíóúâêîôûãõàçA-Z\s]{4,})/;
+    // Padrão: valor (ex: 1.234,56)  quantidade (ex: 30 ou 4,00)  mês/ano (ex: 07/2005)
+    const PAT_DADO = /(\d{1,3}(?:[.,]\d{3})*[.,]\d{2})\s+(\d{1,2}(?:[.,]\d{2})?)\s+(\d{2}\/\d{4})/g;
+
+    const data060 = {}, data040 = {}, qtd060 = {};
+    let nome = '', matricula = '', rubrica = null;
+
+    for (let pg = 1; pg <= totalPags; pg++) {
+      const pctBase = 5 + ((pg - 1) / totalPags) * 70;
+      setProgress(pctBase, `Página ${pg}/${totalPags}`);
+
+      const page = await pdfDoc.getPage(pg);
+      const tc   = await page.getTextContent();
+
+      // Reconstruir texto da página preservando espaçamento entre itens
+      // Itens na mesma linha (Y próximo) são agrupados; quebras de linha quando Y muda
+      const itens = tc.items;
+      let texto = '';
+      let yPrev = null;
+      for (const item of itens) {
+        const y = Math.round(item.transform[5]);
+        if (yPrev !== null && Math.abs(y - yPrev) > 2) {
+          texto += '\n';
+        } else if (texto.length > 0 && !texto.endsWith(' ') && item.str.length > 0) {
+          texto += ' ';
+        }
+        texto += item.str;
+        if (item.str.trim()) yPrev = y;
+      }
+
+      // Detectar rubrica
+      const mRub = texto.match(PAT_RUB);
+      if (mRub) {
+        rubrica = mRub[1];
+        log(`Página ${pg} → Rubrica ${rubrica}`);
+      }
+
+      // Capturar nome/matrícula (primeira vez)
+      if (!matricula) {
+        const mEmp = texto.match(PAT_EMP);
+        if (mEmp) {
+          const matCand = mEmp[1];
+          const nomCand = mEmp[2].trim().replace(/\s+/g, ' ');
+          const ruido = ['CORREIOS','TELEGRAFOS','TELÉGRAFOS','EMPREGADO','PERÍODO','PERIODO','RUBRICA'];
+          if (matCand.length >= 7 && !ruido.some(w => nomCand.toUpperCase().includes(w))) {
+            matricula = matCand;
+            nome = nomCand;
+            log(`Empregado: ${nome} — matrícula ${matricula}`);
+          }
+        }
+      }
+
+      // Extrair linhas de valor
+      let m;
+      PAT_DADO.lastIndex = 0;
+      while ((m = PAT_DADO.exec(texto)) !== null) {
+        const valStr = m[1], qtyStr = m[2], mesAno = m[3];
+        const [mesN, anoN] = mesAno.split('/').map(Number);
+        if (anoN > limAnno || (anoN === limAnno && mesN > limMes)) continue;
+        try {
+          const valor = parseFloat(valStr.replace(/\./g,'').replace(',','.'));
+          const qty   = Math.round(parseFloat(qtyStr.replace(',','.')));
+          if (isNaN(valor) || valor <= 0) continue;
+          if (rubrica === '057060' && !(mesAno in data060)) {
+            data060[mesAno] = valor;
+            qtd060[mesAno]  = qty;
+          } else if (rubrica === '057040' && !(mesAno in data040)) {
+            data040[mesAno] = valor;
+          }
+        } catch(e) {}
+      }
+
+      log(`Página ${pg}/${totalPags} — 060: ${Object.keys(data060).length} | 040: ${Object.keys(data040).length}`);
+    }
+
+    setEtapa(2, 'feita');
+    setProgress(75, 'Extração concluída');
+    log(`Extração finalizada: ${Object.keys(data060).length} registros 057060, ${Object.keys(data040).length} registros 057040`, 'ok');
+
+    // ── ETAPA 3: INFERÊNCIA + CONSOLIDAÇÃO ───────────────────────────────
+    setEtapa(3, 'ativa');
+    setProgress(78, 'Inferindo meses…');
+
+    const inferidos060 = {}, inferidos040 = {};
+    const avisosNaoResolvidos = [];
+
+    // Inferência por continuidade
+    function inferir(dataRub, inferidosOut, label) {
+      const meses = Object.keys(dataRub).sort((a,b) => sortKey(a)-sortKey(b));
+      if (!meses.length) return;
+      const inicio = meses[0], fim = meses[meses.length-1];
+      const todos  = intervaloMeses(inicio, fim);
+      todos.forEach(ma => {
+        if (ma in dataRub) return;
+        const ant = mesAnterior(ma), pos = mesPosterior(ma);
+        const vAnt = dataRub[ant], vPos = dataRub[pos];
+        if (vAnt !== undefined && vPos !== undefined && Math.abs(vAnt - vPos) < 0.01) {
+          dataRub[ma] = vAnt;
+          inferidosOut[ma] = vAnt;
+          log(`${label} ${ma}: inferido como ${brCurrency(vAnt)} (continuidade)`, 'warn');
+        } else {
+          avisosNaoResolvidos.push(`${label} – ${ma}: não inferido (ant=${vAnt !== undefined ? brCurrency(vAnt) : '—'}, pos=${vPos !== undefined ? brCurrency(vPos) : '—'})`);
+        }
+      });
+    }
+
+    inferir(data060, inferidos060, 'Rubrica 057060');
+    inferir(data040, inferidos040, 'Rubrica 057040');
+
+    // Determinar início do período real
+    const todosOCR = [...new Set([...Object.keys(data060), ...Object.keys(data040)])].sort((a,b)=>sortKey(a)-sortKey(b));
+    const primeiroReal = todosOCR[0] || '01/2002';
+
+    // Construir linhas históricas (07/1994 até mes anterior ao primeiro real, máximo 12/2001)
+    const linhas = [];
+    const histFim060 = primeiroReal && sortKey(primeiroReal) > sortKey('12/2001') ? '12/2001' : mesAnterior(primeiroReal);
+
+    if (primeiroReal && sortKey(primeiroReal) > sortKey('07/1994')) {
+      const histMeses = intervaloMeses('07/1994', histFim060);
+      histMeses.forEach(ma => {
+        const fva  = FACIAL_VA[ma];
+        const fva2 = FACIAL_VA2[ma];
+        if (!fva && !fva2) return;
+        const v060 = fva ? Math.round(fva * 30 * 100) / 100 : 0;
+        const v040 = fva2 ? Math.round(fva2.v * fva2.mult * 100) / 100 : 0;
+        linhas.push({
+          mes_ano: ma, v060, v040,
+          tipo: 'estimado',
+          facial_va: fva || null,
+          facial_va2: fva2 ? fva2.v : null,
+          mult_va2: fva2 ? fva2.mult : null,
+        });
+      });
+    }
+
+    // Linhas reais
+    todosOCR.forEach(ma => {
+      const v060 = data060[ma] || 0;
+      const v040 = data040[ma] || 0;
+      const tipo = (ma in inferidos060 || ma in inferidos040) ? 'inferido' : 'real';
+      linhas.push({ mes_ano: ma, v060, v040, tipo, facial_va: null, facial_va2: null, mult_va2: null });
+    });
+
+    setEtapa(3, 'feita');
+    setProgress(85, 'Consolidação concluída');
+    log(`Consolidado: ${linhas.filter(l=>l.tipo==='estimado').length} estimados + ${linhas.filter(l=>l.tipo==='inferido').length} inferidos + ${linhas.filter(l=>l.tipo==='real').length} reais`, 'ok');
+
+    // ── ETAPA 4: GERAR EXCEL (ExcelJS) ────────────────────────────────────
+    setEtapa(4, 'ativa');
+    setProgress(88, 'Montando Excel…');
+
+    const wb = new ExcelJS.Workbook();
+    wb.creator = 'Costa Nunes Advogados';
+    wb.created = new Date();
+
+    const ws = wb.addWorksheet('Valores Mensais', {
+      views: [{ state: 'frozen', ySplit: 6 }],
+      pageSetup: { paperSize: 9, orientation: 'landscape', fitToPage: true }
+    });
+
+    // ── Larguras de colunas ──
+    ws.columns = [
+      { key:'mes',   width: 12 },
+      { key:'fva',   width: 20 },
+      { key:'v060',  width: 22 },
+      { key:'fva2',  width: 24 },
+      { key:'v040',  width: 22 },
+      { key:'total', width: 24 },
+    ];
+
+    const drse = document.getElementById('dr-se').value || 'SUPERINTENDÊNCIA ESTADUAL GO';
+    const periodoStr = linhas.length ? `${linhas[0].mes_ano} a ${linhas[linhas.length-1].mes_ano}` : '—';
+
+    // ── Paleta (mesma do arquivo de referência) ──
+    const C = {
+      hdrBg:  '1F4E79', hdrFg:  'FFFFFF',
+      estABg: 'FFF2CC', estBBg: 'FDEBD0', estFg: '7F6000',
+      infABg: 'E2EFDA', infBBg: 'D0E8C5', infFg: '375623',
+      reaABg: 'EBF3FB', reaBBg: 'FFFFFF', reaFg: '000000',
+      totBg:  'D6E4F0', totFg:  '1F4E79',
+      subBg:  'FFFACD', subFg:  '7F6000',
+      avBg:   'FFFACD', avFg:   '7F6000',
+    };
+
+    const THIN = { style: 'thin', color: { argb: 'FFBFBFBF' } };
+    const THIN_BORDER = { top: THIN, bottom: THIN, left: THIN, right: THIN };
+    const fmtBRL = '"R$ "#,##0.00';
+
+    function argb(hex) { return 'FF' + hex.toUpperCase(); }
+
+    function applyRowStyle(row, bgHex, fgHex, opts = {}) {
+      const { bold=false, sz=10, italic=false, hAligns=[], numFmt=null } = opts;
+      row.eachCell({ includeEmpty: true }, (cell, colNum) => {
+        const hAlign = hAligns[colNum - 1] || 'left';
+        cell.font = { name: 'Arial', size: sz, bold, italic, color: { argb: argb(fgHex) } };
+        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: argb(bgHex) } };
+        cell.alignment = { horizontal: hAlign, vertical: 'middle', wrapText: false };
+        cell.border = THIN_BORDER;
+        if (numFmt && (colNum === 3 || colNum === 5 || colNum === 6)) {
+          cell.numFmt = fmtBRL;
+        }
+      });
+    }
+
+    // ── LINHA 1: Nome / matrícula ──
+    const row1 = ws.addRow([`${nome || 'EMPREGADO'} – Matrícula ${matricula || '0000000'}`, '', '', '', '', '']);
+    ws.mergeCells('A1:F1');
+    row1.height = 22;
+    row1.getCell(1).font = { name: 'Arial', size: 13, bold: true, color: { argb: argb('1F4E79') } };
+    row1.getCell(1).alignment = { horizontal: 'center', vertical: 'middle' };
+
+    // ── LINHA 2: Empresa ──
+    const row2 = ws.addRow([`Empresa Brasileira de Correios e Telégrafos (ECT) – ${drse}`, '', '', '', '', '']);
+    ws.mergeCells('A2:F2');
+    row2.height = 16;
+    row2.getCell(1).font = { name: 'Arial', size: 10, color: { argb: argb('404040') } };
+    row2.getCell(1).alignment = { horizontal: 'center', vertical: 'middle' };
+
+    // ── LINHA 3: Período ──
+    const row3 = ws.addRow([`Valores mensais – Vale Alimentação (057060) e Vale Alimentação II (057040) – ${periodoStr}`, '', '', '', '', '']);
+    ws.mergeCells('A3:F3');
+    row3.height = 16;
+    row3.getCell(1).font = { name: 'Arial', size: 10, italic: true, color: { argb: argb('404040') } };
+    row3.getCell(1).alignment = { horizontal: 'center', vertical: 'middle' };
+
+    // ── LINHA 4: Aviso legenda ──
+    const legendaTxt = '⚠  Amarelo = valor estimado pelas tabelas históricas de valores faciais ECT  '
+      + '(VA = facial × 30 dias; VA2 = facial × 4 até jul/2001 e × 5 de ago/2001 a dez/2001)  '
+      + '|  Verde = inferido por continuidade  |  Azul = valor real extraído do relatório de folha de pagamento';
+    const row4 = ws.addRow([legendaTxt, '', '', '', '', '']);
+    ws.mergeCells('A4:F4');
+    row4.height = 28;
+    row4.getCell(1).font = { name: 'Arial', size: 9, color: { argb: argb(C.avFg) } };
+    row4.getCell(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: argb(C.avBg) } };
+    row4.getCell(1).alignment = { horizontal: 'left', vertical: 'middle', wrapText: true };
+
+    // ── LINHA 5: vazia ──
+    ws.addRow([]);
+
+    // ── LINHA 6: Cabeçalho de colunas ──
+    const rowHdr = ws.addRow([
+      'Mês/Ano',
+      'VA Facial\n(unitário)',
+      'Vale Alimentação\n(057060)',
+      'VA2 Facial\n(unit. × mult.)',
+      'Vale Alim. II\n(057040)',
+      'Total Mensal\n(057060 + 057040)'
+    ]);
+    rowHdr.height = 40;
+    rowHdr.eachCell(cell => {
+      cell.font = { name: 'Arial', size: 11, bold: true, color: { argb: argb(C.hdrFg) } };
+      cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: argb(C.hdrBg) } };
+      cell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
+      cell.border = THIN_BORDER;
+    });
+
+    // ── LINHAS DE DADOS ──
+    const DATA_START_ROW = 7;
+    const hAlignsDados = ['center','center','right','center','right','right'];
+
+    linhas.forEach((l, i) => {
+      const excelR = DATA_START_ROW + i;
+      const par = i % 2 === 0;
+      let bgA, bgB, fg;
+      if      (l.tipo === 'estimado') { bgA = C.estABg; bgB = C.estBBg; fg = C.estFg; }
+      else if (l.tipo === 'inferido') { bgA = C.infABg; bgB = C.infBBg; fg = C.infFg; }
+      else                            { bgA = C.reaABg; bgB = C.reaBBg; fg = C.reaFg; }
+      const bg = par ? bgA : bgB;
+
+      const txFva  = l.facial_va  != null ? `R$ ${l.facial_va.toFixed(2).replace('.',',')} × 30` : '—';
+      const txFva2 = l.facial_va2 != null ? `R$ ${l.facial_va2.toFixed(2).replace('.',',')} × ${l.mult_va2}` : '—';
+
+      const row = ws.addRow([l.mes_ano, txFva, l.v060, txFva2, l.v040, { formula: `C${excelR}+E${excelR}` }]);
+      row.height = 15;
+      applyRowStyle(row, bg, fg, { sz: 10, hAligns: hAlignsDados, numFmt: true });
+    });
+
+    // ── LINHA DE TOTAL ──
+    const lastDataRow = DATA_START_ROW + linhas.length - 1;
+    const totalRow    = lastDataRow + 1;
+    const rowTot = ws.addRow([
+      'TOTAL GERAL', '',
+      { formula: `SUM(C${DATA_START_ROW}:C${lastDataRow})` },
+      '',
+      { formula: `SUM(E${DATA_START_ROW}:E${lastDataRow})` },
+      { formula: `SUM(F${DATA_START_ROW}:F${lastDataRow})` },
+    ]);
+    rowTot.height = 18;
+    applyRowStyle(rowTot, C.totBg, C.totFg, { bold: true, sz: 10, hAligns: ['left','center','right','center','right','right'], numFmt: true });
+    rowTot.getCell(1).font = { ...rowTot.getCell(1).font, bold: true };
+
+    // ── SUBTOTAL ESTIMADO ──
+    const estRows = linhas.map((l,i) => l.tipo === 'estimado' ? (DATA_START_ROW + i) : null).filter(r => r !== null);
+    if (estRows.length) {
+      const soma060 = estRows.map(r => `C${r}`).join('+');
+      const soma040 = estRows.map(r => `E${r}`).join('+');
+      const somaT   = estRows.map(r => `F${r}`).join('+');
+      const periodoEst = `${linhas.find(l=>l.tipo==='estimado')?.mes_ano || ''} – ${[...linhas].reverse().find(l=>l.tipo==='estimado')?.mes_ano || ''}`;
+      const rowSub = ws.addRow([
+        `Subtotal estimado (${periodoEst})`, '',
+        { formula: soma060 }, '',
+        { formula: soma040 },
+        { formula: somaT },
+      ]);
+      rowSub.height = 15;
+      applyRowStyle(rowSub, C.subBg, C.subFg, { italic: true, sz: 9, hAligns: ['left','center','right','center','right','right'], numFmt: true });
+    }
+
+    // ── AVISOS DE MESES NÃO RESOLVIDOS ──
+    if (avisosNaoResolvidos && avisosNaoResolvidos.length > 0) {
+      ws.addRow([]);
+      const avisoTxt = '⚠ Atenção: ' + avisosNaoResolvidos.join('; ') + '.';
+      const rowAv = ws.addRow([avisoTxt, '', '', '', '', '']);
+      ws.mergeCells(`A${rowAv.number}:F${rowAv.number}`);
+      rowAv.getCell(1).font = { name: 'Arial', size: 9, color: { argb: argb(C.avFg) } };
+      rowAv.getCell(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: argb(C.avBg) } };
+      rowAv.getCell(1).alignment = { horizontal: 'left', vertical: 'middle', wrapText: true };
+      rowAv.height = 28;
+    }
+
+    // ── FONTES ──
+    ws.addRow([]);
+    const fontesTxt = 'Fontes: (1) Relatório de Empregado por Rubrica e Período – Versão Congelada (Folha Final Tipo 1), ECT/CEGEP/GBEN, '
+      + `rubricas 057060 e 057040 (limite aplicado: ${document.getElementById('data-fim').value || '—'}). `
+      + '(2) Tabelas históricas de valores faciais VA/Refeição e Vale Cesta/VA II, ECT/DGEP/CEGEP/GBEN. '
+      + 'Valores estimados (amarelo): VA = facial × 30 dias; VA2 = facial × 4 (até jul/2001) e × 5 (ago–dez/2001), '
+      + 'per Obs. 3 e 4 da tabela ECT. Os benefícios VA/VR/VC não integram a remuneração (art. 28 da Lei n.º 8.212/1991).';
+    const rowFontes = ws.addRow([fontesTxt, '', '', '', '', '']);
+    ws.mergeCells(`A${rowFontes.number}:F${rowFontes.number}`);
+    rowFontes.getCell(1).font = { name: 'Arial', size: 8, italic: true, color: { argb: argb('606060') } };
+    rowFontes.getCell(1).alignment = { horizontal: 'left', vertical: 'top', wrapText: true };
+    rowFontes.height = 50;
+
+    // ── Download ──
+    const buffer = await wb.xlsx.writeBuffer();
+    const nomeArq = `Vale_Alimentacao_${(nome || 'EMPREGADO').replace(/\s+/g,'_')}.xlsx`;
+    window._xlsxBuffer = buffer;
+    window._xlsxNome   = nomeArq;
+    // Auto-download
+    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url; a.download = nomeArq; a.click();
+    URL.revokeObjectURL(url);
+
+    setEtapa(4, 'feita');
+    setProgress(100, 'Concluído');
+    log('Planilha Excel gerada com sucesso.', 'ok');
+
+    // Armazenar para download
+    window._xlsxWB = wb;
+    window._xlsxNome = `${nome.split(' ').slice(0,2).join('_')}_Vales_${periodoStr.replace(/\//g,'-').replace(/ a /g,'_a_')}.xlsx`;
+
+    // ── Atualizar painel de resultado ────────────────────────────────────
+    const total060 = Object.values(data060).reduce((a,b)=>a+b,0);
+    const total040 = Object.values(data040).reduce((a,b)=>a+b,0);
+    const totalEst060 = linhas.filter(l=>l.tipo==='estimado').reduce((a,l)=>a+l.v060,0);
+    const totalEst040 = linhas.filter(l=>l.tipo==='estimado').reduce((a,l)=>a+l.v040,0);
+
+    document.getElementById('res-nome').textContent = `${nome} — Matrícula ${matricula}`;
+    document.getElementById('res-periodo').textContent = `Período: ${periodoStr} (limite aplicado: ${dataLimMaStr})`;
+    document.getElementById('res-060').textContent = brCurrency(total060 + totalEst060);
+    document.getElementById('res-060-n').textContent = `${Object.keys(data060).length} meses reais`;
+    document.getElementById('res-040').textContent = brCurrency(total040 + totalEst040);
+    document.getElementById('res-040-n').textContent = `${Object.keys(data040).length} meses reais`;
+    document.getElementById('res-total').textContent = brCurrency(total060 + total040 + totalEst060 + totalEst040);
+    document.getElementById('res-linhas').textContent = `${linhas.length} meses no total`;
+
+    if (avisosNaoResolvidos.length) {
+      const avisoBx = document.getElementById('aviso-box');
+      const avisoLi = document.getElementById('aviso-lista');
+      avisoLi.innerHTML = '';
+      avisosNaoResolvidos.forEach(a => {
+        const li = document.createElement('li'); li.textContent = a; avisoLi.appendChild(li);
+      });
+      avisoBx.style.display = 'block';
+    }
+
+    document.getElementById('painel-resultado').style.display = 'block';
+    btnProc.disabled = false;
+    btnProc.textContent = 'Processar outro PDF';
+
+  } catch(err) {
+    log('ERRO: ' + err.message, 'erro');
+    console.error(err);
+    setProgress(0, 'Erro');
+    btnProc.disabled = false;
+    btnProc.textContent = 'Tentar novamente';
+  }
+});
+
+// ── DOWNLOAD ──────────────────────────────────────────────────────────────
+document.getElementById('btn-baixar').addEventListener('click', () => {
+  if (!window._xlsxBuffer) return;
+  const blob = new Blob([window._xlsxBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = window._xlsxNome || 'relatorio.xlsx'; a.click();
+  URL.revokeObjectURL(url);
+});
+</script>
+</body>
+</html>
