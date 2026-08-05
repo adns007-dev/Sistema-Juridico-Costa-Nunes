@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evolução da Pensão — Sistema Jurídico Costa Nunes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Georgia&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+<style>
+  :root{
+    --preto:#0a0a0a;
+    --dourado:#c9a84c;
+    --creme:#f5f3ee;
+    --creme-escuro:#e9e5da;
+    --texto:#1c1c1a;
+    --texto-suave:#6b6558;
+    --borda:#d8d2c2;
+    --vermelho:#8a3324;
+    --verde:#4a5d3a;
+    --branco:#ffffff;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--creme);
+    color:var(--texto);
+    font-family:'IBM Plex Sans',Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  header{
+    background:var(--preto);
+    border-bottom:3px solid var(--dourado);
+    padding:22px 32px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  header .brand{
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+  }
+  header .brand .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--dourado);
+  }
+  header h1{
+    font-family:Georgia,'Times New Roman',serif;
+    font-size:22px;
+    font-weight:400;
+    color:var(--branco);
+    margin:0;
+    letter-spacing:.01em;
+  }
+  header a.voltar{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    color:var(--creme);
+    text-decoration:none;
+    border:1px solid var(--dourado);
+    padding:8px 14px;
+    border-radius:2px;
+    transition:background .15s ease;
+  }
+  header a.voltar:hover{background:rgba(201,168,76,.15);}
+
+  main{
+    max-width:1180px;
+    margin:0 auto;
+    padding:36px 28px 80px;
+  }
+
+  .secao{
+    background:var(--branco);
+    border:1px solid var(--borda);
+    border-radius:3px;
+    margin-bottom:28px;
+    overflow:hidden;
+  }
+  .secao-titulo{
+    background:var(--creme-escuro);
+    border-bottom:1px solid var(--borda);
+    padding:14px 20px;
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+  }
+  .secao-titulo .num{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    color:var(--dourado);
+    background:var(--preto);
+    padding:2px 7px;
+    border-radius:2px;
+  }
+  .secao-titulo h2{
+    font-family:Georgia,serif;
+    font-size:16px;
+    font-weight:400;
+    margin:0;
+    color:var(--texto);
+  }
+  .secao-corpo{padding:22px 20px;}
+
+  .grid-campos{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+    gap:18px;
+  }
+  .campo label{
+    display:block;
+    font-size:12.5px;
+    color:var(--texto-suave);
+    margin-bottom:6px;
+    font-weight:500;
+  }
+  .campo input{
+    width:100%;
+    padding:10px 12px;
+    border:1px solid var(--borda);
+    border-radius:2px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:14px;
+    background:var(--creme);
+    color:var(--texto);
+  }
+  .campo input:focus{
+    outline:none;
+    border-color:var(--dourado);
+    background:var(--branco);
+  }
+
+  table.rubricas{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:8px;
+    font-size:13.5px;
+  }
+  table.rubricas th{
+    text-align:left;
+    font-size:11.5px;
+    text-transform:uppercase;
+    letter-spacing:.05em;
+    color:var(--texto-suave);
+    border-bottom:2px solid var(--preto);
+    padding:8px 8px;
+    font-weight:600;
+  }
+  table.rubricas td{
+    padding:6px 8px;
+    border-bottom:1px solid var(--borda);
+    vertical-align:middle;
+  }
+  table.rubricas tr.fixa td{background:#faf7ee;}
+  table.rubricas input[type=text],table.rubricas input[type=number]{
+    width:100%;
+    padding:7px 9px;
+    border:1px solid var(--borda);
+    border-radius:2px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13.5px;
+    background:var(--creme);
+  }
+  table.rubricas input:disabled{background:#efece2;color:var(--texto-suave);}
+  table.rubricas .pct{
+    font-family:'IBM Plex Mono',monospace;
+    color:var(--verde);
+    text-align:right;
+    padding-right:14px;
+    white-space:nowrap;
+  }
+  table.rubricas .col-rem{width:36px;text-align:center;}
+  .btn-remover{
+    border:none;
+    background:none;
+    color:var(--vermelho);
+    cursor:pointer;
+    font-size:15px;
+    line-height:1;
+    padding:4px;
+  }
+  .btn-remover:disabled{opacity:.25;cursor:not-allowed;}
+
+  .linha-acoes{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:14px;
+  }
+
+  .btn{
+    font-family:'IBM Plex Sans',Arial,sans-serif;
+    font-size:13.5px;
+    font-weight:600;
+    padding:10px 18px;
+    border-radius:2px;
+    border:1px solid transparent;
+    cursor:pointer;
+    transition:opacity .15s ease, transform .05s ease;
+  }
+  .btn:active{transform:translateY(1px);}
+  .btn-secundario{
+    background:var(--branco);
+    border:1px solid var(--preto);
+    color:var(--preto);
+  }
+  .btn-secundario:hover{background:var(--creme-escuro);}
+  .btn-principal{
+    background:var(--preto);
+    color:var(--dourado);
+    border:1px solid var(--preto);
+  }
+  .btn-principal:hover{opacity:.88;}
+  .btn-ouro{
+    background:var(--dourado);
+    color:var(--preto);
+  }
+  .btn-ouro:hover{opacity:.88;}
+  .btn[disabled]{opacity:.4;cursor:not-allowed;}
+
+  .resumo{
+    display:flex;
+    gap:26px;
+    flex-wrap:wrap;
+    padding:16px 20px;
+    background:var(--creme);
+    border-top:1px solid var(--borda);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+  }
+  .resumo strong{display:block;font-family:'IBM Plex Sans',sans-serif;font-size:11px;color:var(--texto-suave);font-weight:500;margin-bottom:3px;text-transform:uppercase;letter-spacing:.04em;}
+
+  .tabela-scroll{
+    max-height:560px;
+    overflow:auto;
+    border-top:1px solid var(--borda);
+  }
+  table.evolucao{
+    width:100%;
+    border-collapse:collapse;
+    font-size:12.5px;
+    font-family:'IBM Plex Mono',monospace;
+  }
+  table.evolucao thead th{
+    position:sticky;
+    top:0;
+    background:var(--preto);
+    color:var(--creme);
+    padding:9px 10px;
+    text-align:right;
+    font-family:'IBM Plex Sans',sans-serif;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.04em;
+    font-weight:600;
+    white-space:nowrap;
+    z-index:2;
+  }
+  table.evolucao thead th:first-child,
+  table.evolucao tbody td:first-child{text-align:left;}
+  table.evolucao tbody td{
+    padding:7px 10px;
+    text-align:right;
+    border-bottom:1px solid var(--borda);
+    white-space:nowrap;
+  }
+  table.evolucao tbody tr:nth-child(even){background:#faf8f2;}
+  table.evolucao tbody tr.marco-reajuste{background:#fdf3e4;}
+  table.evolucao tbody tr.marco-reajuste td:first-child{font-weight:600;color:var(--vermelho);}
+  table.evolucao tbody td.remuneracao,table.evolucao thead th.remuneracao{font-weight:600;}
+  table.evolucao tbody td.pensao,table.evolucao thead th.pensao{
+    font-weight:700;
+    color:var(--verde);
+    background:#f2f6ee;
+  }
+
+  .aviso{
+    font-size:12.5px;
+    color:var(--texto-suave);
+    padding:12px 20px;
+    border-top:1px solid var(--borda);
+    background:var(--creme);
+  }
+  .aviso b{color:var(--texto);}
+
+  .oculto{display:none !important;}
+
+  footer{
+    text-align:center;
+    padding:24px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    color:var(--texto-suave);
+  }
+
+  ::-webkit-scrollbar{width:10px;height:10px;}
+  ::-webkit-scrollbar-track{background:var(--creme);}
+  ::-webkit-scrollbar-thumb{background:var(--borda);border-radius:5px;}
+  ::-webkit-scrollbar-thumb:hover{background:var(--dourado);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <span class="eyebrow">Costa Nunes Advogados Associados</span>
+    <h1>Evolução da Pensão</h1>
+  </div>
+  <a class="voltar" href="javascript:history.back()">← Voltar</a>
+</header>
+
+<main>
+
+  <section class="secao">
+    <div class="secao-titulo"><span class="num">1</span><h2>Dados da pensão</h2></div>
+    <div class="secao-corpo">
+      <div class="grid-campos">
+        <div class="campo">
+          <label for="dataInicio">Data de início da pensão</label>
+          <input type="date" id="dataInicio">
+        </div>
+        <div class="campo">
+          <label for="salarioBase">Salário base — mês anterior ao início da pensão (R$)</label>
+          <input type="number" id="salarioBase" step="0.01" min="0" placeholder="0,00">
+        </div>
+        <div class="campo">
+          <label for="dataAdmissao">Data de admissão</label>
+          <input type="date" id="dataAdmissao">
+        </div>
+        <div class="campo">
+          <label for="percPensao">Percentual da pensão (%)</label>
+          <input type="number" id="percPensao" step="0.01" min="0" max="100" placeholder="50">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="secao">
+    <div class="secao-titulo"><span class="num">2</span><h2>Rubricas da remuneração — mês anterior ao início da pensão</h2></div>
+    <div class="secao-corpo">
+      <table class="rubricas">
+        <thead>
+          <tr>
+            <th style="width:38%">Rubrica</th>
+            <th style="width:22%">Valor (R$)</th>
+            <th style="width:20%">% sobre salário base</th>
+            <th class="col-rem"></th>
+          </tr>
+        </thead>
+        <tbody id="corpoRubricas"></tbody>
+      </table>
+      <div class="linha-acoes">
+        <button class="btn btn-secundario" id="btnAddRubrica" type="button">+ Adicionar rubrica</button>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:13px;">
+          Remuneração do mês anterior: <strong id="remuneracaoAnterior">R$ 0,00</strong>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="secao">
+    <div class="secao-titulo"><span class="num">3</span><h2>Gerar evolução</h2></div>
+    <div class="secao-corpo" style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;">
+      <button class="btn btn-principal" id="btnGerar" type="button">Gerar tabela de evolução</button>
+      <button class="btn btn-ouro" id="btnExportar" type="button" disabled>Exportar para Excel</button>
+      <span id="msgErro" style="color:var(--vermelho);font-size:13px;"></span>
+    </div>
+  </section>
+
+  <section class="secao oculto" id="secaoResultado">
+    <div class="secao-titulo"><span class="num">4</span><h2>Evolução mensal da pensão</h2></div>
+    <div class="resumo" id="resumoResultado"></div>
+    <div class="tabela-scroll">
+      <table class="evolucao">
+        <thead><tr id="cabecalhoEvolucao"></tr></thead>
+        <tbody id="corpoEvolucao"></tbody>
+      </table>
+    </div>
+    <div class="aviso">
+      <b>Nota:</b> linhas destacadas indicam meses em que houve reajuste salarial aplicado. A tabela é gerada até o mês corrente; reajustes futuros devem ser incluídos na tabela de referência do sistema.
+    </div>
+  </section>
+
+</main>
+
+<footer>Sistema Jurídico Costa Nunes — Evolução da Pensão v1.0.0</footer>
+
+<script>
+(function(){
+"use strict";
+
+/* ============================================================
+   TABELA FIXA DE REAJUSTES — CATEGORIA (CARTEIRO / ECT)
+   Data efetiva (1º dia do mês) | tipo ('percentual'|'fixo') | valor
+   ============================================================ */
+const REAJUSTES = [
+  { data: "2012-08-01", tipo: "percentual", valor: 0.065  },
+  { data: "2013-08-01", tipo: "percentual", valor: 0.08   },
+  { data: "2014-08-01", tipo: "percentual", valor: 0.065  },
+  { data: "2016-01-01", tipo: "fixo",       valor: 200    },
+  { data: "2016-08-01", tipo: "percentual", valor: 0.06   },
+  { data: "2017-02-01", tipo: "percentual", valor: 0.03   },
+  { data: "2017-08-01", tipo: "percentual", valor: 0.0207 },
+  { data: "2018-08-01", tipo: "percentual", valor: 0.0361 },
+  { data: "2019-08-01", tipo: "percentual", valor: 0.03   },
+  { data: "2020-08-01", tipo: "percentual", valor: 0.026  },
+  { data: "2021-08-01", tipo: "percentual", valor: 0.0975 },
+  { data: "2022-08-01", tipo: "percentual", valor: 0.1012 },
+  { data: "2024-01-01", tipo: "fixo",       valor: 250    },
+  { data: "2025-01-01", tipo: "fixo",       valor: 260    },
+  { data: "2025-08-01", tipo: "percentual", valor: 0.051  }
+];
+const ANUENIO_MAXIMO = 0.35;
+
+/* ---------- utilidades de data ---------- */
+function parseISO(s){
+  // 'YYYY-MM-DD' -> Date local (evita deslocamento de fuso)
+  const [y,m,d] = s.split("-").map(Number);
+  return new Date(y, m-1, d);
+}
+function primeiroDiaMes(d){ return new Date(d.getFullYear(), d.getMonth(), 1); }
+function addMeses(d, n){ return new Date(d.getFullYear(), d.getMonth()+n, 1); }
+function chaveAnoMes(d){ return d.getFullYear()*100 + (d.getMonth()+1); }
+function formatarMesAno(d){
+  const meses = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+  return meses[d.getMonth()] + "/" + d.getFullYear();
+}
+function anosCompletos(inicio, fim){
+  let anos = fim.getFullYear() - inicio.getFullYear();
+  const aniversario = new Date(fim.getFullYear(), inicio.getMonth(), inicio.getDate());
+  if (fim < aniversario) anos--;
+  return anos;
+}
+function fmtMoeda(v){
+  return v.toLocaleString("pt-BR", {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+function fmtPct(v, casas){
+  return (v*100).toLocaleString("pt-BR", {minimumFractionDigits:casas, maximumFractionDigits:casas}) + "%";
+}
+
+const mapaReajustes = new Map(REAJUSTES.map(r => [chaveAnoMes(parseISO(r.data)), r]));
+
+/* ============================================================
+   RUBRICAS — linhas dinâmicas (linha 0 fixa = ANUÊNIO)
+   ============================================================ */
+const corpoRubricas = document.getElementById("corpoRubricas");
+let contadorRubricas = 0;
+
+function novaLinhaRubrica(nome, valor, fixaAnuenio){
+  const tr = document.createElement("tr");
+  tr.dataset.id = ++contadorRubricas;
+  if (fixaAnuenio) tr.classList.add("fixa");
+  tr.innerHTML = `
+    <td><input type="text" class="nome" value="${nome||''}" ${fixaAnuenio ? "disabled" : ""} placeholder="Nome da rubrica"></td>
+    <td><input type="number" class="valor" step="0.01" min="0" value="${valor||''}" placeholder="0,00"></td>
+    <td class="pct">0,00%</td>
+    <td class="col-rem">${fixaAnuenio ? "" : '<button type="button" class="btn-remover" title="Remover">✕</button>'}</td>
+  `;
+  corpoRubricas.appendChild(tr);
+  tr.querySelector(".valor").addEventListener("input", recalcularPercentuais);
+  const btnRem = tr.querySelector(".btn-remover");
+  if (btnRem) btnRem.addEventListener("click", () => { tr.remove(); recalcularPercentuais(); });
+  return tr;
+}
+
+function recalcularPercentuais(){
+  const salarioBase = parseFloat(document.getElementById("salarioBase").value) || 0;
+  let remuneracao = salarioBase;
+  [...corpoRubricas.querySelectorAll("tr")].forEach(tr => {
+    const valor = parseFloat(tr.querySelector(".valor").value) || 0;
+    const pctCell = tr.querySelector(".pct");
+    const pct = salarioBase > 0 ? valor / salarioBase : 0;
+    pctCell.textContent = fmtPct(pct, 2);
+    remuneracao += valor;
+  });
+  document.getElementById("remuneracaoAnterior").textContent = "R$ " + fmtMoeda(remuneracao);
+}
+
+document.getElementById("salarioBase").addEventListener("input", recalcularPercentuais);
+document.getElementById("btnAddRubrica").addEventListener("click", () => novaLinhaRubrica("", "", false));
+
+// linha inicial ANUÊNIO + exemplos ilustrativos (removíveis)
+novaLinhaRubrica("ANUÊNIO", "", true);
+
+/* ============================================================
+   GERAÇÃO DA EVOLUÇÃO
+   ============================================================ */
+function lerRubricas(){
+  const salarioBase = parseFloat(document.getElementById("salarioBase").value) || 0;
+  const linhas = [...corpoRubricas.querySelectorAll("tr")];
+  const anuenioTr = linhas[0];
+  const outrasTr = linhas.slice(1);
+
+  const valorAnuenio = parseFloat(anuenioTr.querySelector(".valor").value) || 0;
+  const anuenioPctBase = salarioBase > 0 ? Math.round((valorAnuenio/salarioBase)*100)/100 : 0;
+
+  const outras = outrasTr.map(tr => {
+    const nome = tr.querySelector(".nome").value.trim() || "Rubrica";
+    const valor = parseFloat(tr.querySelector(".valor").value) || 0;
+    const pct = salarioBase > 0 ? Math.round((valor/salarioBase)*10000)/10000 : 0;
+    return { nome, pct };
+  });
+
+  return { salarioBase, anuenioPctBase, outras };
+}
+
+function gerarEvolucao(){
+  document.getElementById("msgErro").textContent = "";
+
+  const dataInicioStr = document.getElementById("dataInicio").value;
+  const dataAdmissaoStr = document.getElementById("dataAdmissao").value;
+  const percPensao = parseFloat(document.getElementById("percPensao").value);
+
+  if (!dataInicioStr || !dataAdmissaoStr){
+    document.getElementById("msgErro").textContent = "Informe a data de início da pensão e a data de admissão.";
+    return null;
+  }
+  if (isNaN(percPensao) || percPensao <= 0){
+    document.getElementById("msgErro").textContent = "Informe o percentual da pensão.";
+    return null;
+  }
+  const { salarioBase, anuenioPctBase, outras } = lerRubricas();
+  if (!salarioBase || salarioBase <= 0){
+    document.getElementById("msgErro").textContent = "Informe o salário base do mês anterior à pensão.";
+    return null;
+  }
+
+  const dataInicio = primeiroDiaMes(parseISO(dataInicioStr));
+  const dataAdmissao = parseISO(dataAdmissaoStr);
+  const hoje = primeiroDiaMes(new Date());
+
+  const anosNaDataInicio = anosCompletos(dataAdmissao, dataInicio);
+
+  const linhas = [];
+  let salarioAnterior = salarioBase;
+  let dataCorrente = new Date(dataInicio);
+
+  while (dataCorrente <= hoje){
+    const reaj = mapaReajustes.get(chaveAnoMes(dataCorrente));
+    let salario;
+    let houveReajuste = false;
+    if (reaj){
+      salario = reaj.tipo === "percentual" ? salarioAnterior * (1 + reaj.valor) : salarioAnterior + reaj.valor;
+      houveReajuste = true;
+    } else {
+      salario = salarioAnterior;
+    }
+
+    const anosAgora = anosCompletos(dataAdmissao, dataCorrente);
+    const incremento = Math.max(0, anosAgora - anosNaDataInicio) * 0.01;
+    const anuenioPct = Math.min(ANUENIO_MAXIMO, anuenioPctBase + incremento);
+    const anuenioValor = salario * anuenioPct;
+
+    const rubricasValores = outras.map(r => salario * r.pct);
+    const remuneracao = salario + anuenioValor + rubricasValores.reduce((a,b)=>a+b,0);
+    const pensao = remuneracao * (percPensao/100);
+
+    linhas.push({
+      data: new Date(dataCorrente),
+      salario, anuenioPct, anuenioValor,
+      rubricasValores, remuneracao, pensao,
+      houveReajuste, tipoReajuste: reaj ? reaj.tipo : null, valorReajuste: reaj ? reaj.valor : null
+    });
+
+    salarioAnterior = salario;
+    dataCorrente = addMeses(dataCorrente, 1);
+  }
+
+  return { linhas, outras, percPensao };
+}
+
+function renderizarTabela(resultado){
+  const { linhas, outras, percPensao } = resultado;
+  const cab = document.getElementById("cabecalhoEvolucao");
+  const corpo = document.getElementById("corpoEvolucao");
+  cab.innerHTML = "";
+  corpo.innerHTML = "";
+
+  const colunas = ["Data","Salário","Anuênio %","Anuênio (R$)", ...outras.map(r=>r.nome), "Remuneração", "Pensão"];
+  colunas.forEach((c,i) => {
+    const th = document.createElement("th");
+    th.textContent = c;
+    if (c === "Remuneração") th.classList.add("remuneracao");
+    if (c === "Pensão") th.classList.add("pensao");
+    cab.appendChild(th);
+  });
+
+  linhas.forEach(l => {
+    const tr = document.createElement("tr");
+    if (l.houveReajuste) tr.classList.add("marco-reajuste");
+    const celulas = [
+      formatarMesAno(l.data),
+      fmtMoeda(l.salario),
+      fmtPct(l.anuenioPct, 0),
+      fmtMoeda(l.anuenioValor),
+      ...l.rubricasValores.map(v => fmtMoeda(v)),
+      fmtMoeda(l.remuneracao),
+      fmtMoeda(l.pensao)
+    ];
+    celulas.forEach((v,i) => {
+      const td = document.createElement("td");
+      td.textContent = v;
+      if (i === celulas.length - 2) td.classList.add("remuneracao");
+      if (i === celulas.length - 1) td.classList.add("pensao");
+      tr.appendChild(td);
+    });
+    corpo.appendChild(tr);
+  });
+
+  const primeira = linhas[0], ultima = linhas[linhas.length-1];
+  document.getElementById("resumoResultado").innerHTML = `
+    <div><strong>Período</strong>${formatarMesAno(primeira.data)} — ${formatarMesAno(ultima.data)} (${linhas.length} meses)</div>
+    <div><strong>Percentual da pensão</strong>${percPensao.toLocaleString('pt-BR')}%</div>
+    <div><strong>Remuneração atual</strong>R$ ${fmtMoeda(ultima.remuneracao)}</div>
+    <div><strong>Pensão atual</strong>R$ ${fmtMoeda(ultima.pensao)}</div>
+  `;
+
+  document.getElementById("secaoResultado").classList.remove("oculto");
+}
+
+let ultimoResultado = null;
+
+document.getElementById("btnGerar").addEventListener("click", () => {
+  const resultado = gerarEvolucao();
+  if (!resultado) return;
+  ultimoResultado = resultado;
+  renderizarTabela(resultado);
+  document.getElementById("btnExportar").disabled = false;
+  document.getElementById("secaoResultado").scrollIntoView({behavior:"smooth", block:"start"});
+});
+
+/* ============================================================
+   EXPORTAÇÃO PARA EXCEL (ExcelJS)
+   ============================================================ */
+document.getElementById("btnExportar").addEventListener("click", async () => {
+  if (!ultimoResultado) return;
+  const { linhas, outras, percPensao } = ultimoResultado;
+
+  const wb = new ExcelJS.Workbook();
+  const ws = wb.addWorksheet("Evolução da Pensão");
+
+  const colunas = [
+    { header: "Data", key: "data", width: 12 },
+    { header: "Salário", key: "salario", width: 14 },
+    { header: "Anuênio %", key: "anuenioPct", width: 12 },
+    { header: "Anuênio (R$)", key: "anuenioValor", width: 14 },
+    ...outras.map((r,i) => ({ header: r.nome, key: "rub"+i, width: 14 })),
+    { header: "Remuneração", key: "remuneracao", width: 15 },
+    { header: "Pensão", key: "pensao", width: 15 }
+  ];
+  ws.columns = colunas;
+
+  const headerRow = ws.getRow(1);
+  headerRow.eachCell(cell => {
+    cell.font = { name: "IBM Plex Sans", bold: true, color: { argb: "FFF5F3EE" } };
+    cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF0A0A0A" } };
+    cell.alignment = { horizontal: "center", vertical: "middle" };
+  });
+  headerRow.height = 20;
+
+  linhas.forEach(l => {
+    const linhaObj = {
+      data: formatarMesAno(l.data),
+      salario: l.salario,
+      anuenioPct: l.anuenioPct,
+      anuenioValor: l.anuenioValor,
+      remuneracao: l.remuneracao,
+      pensao: l.pensao
+    };
+    l.rubricasValores.forEach((v,i) => linhaObj["rub"+i] = v);
+    const row = ws.addRow(linhaObj);
+    row.getCell("salario").numFmt = "#,##0.00";
+    row.getCell("anuenioPct").numFmt = "0%";
+    row.getCell("anuenioValor").numFmt = "#,##0.00";
+    row.getCell("remuneracao").numFmt = "#,##0.00";
+    row.getCell("remuneracao").font = { bold: true };
+    row.getCell("pensao").numFmt = "#,##0.00";
+    row.getCell("pensao").font = { bold: true };
+    outras.forEach((r,i) => row.getCell("rub"+i).numFmt = "#,##0.00");
+    if (l.houveReajuste){
+      row.eachCell(cell => {
+        cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFFDF3E4" } };
+      });
+    }
+  });
+
+  ws.views = [{ state: "frozen", ySplit: 1 }];
+
+  const buffer = await wb.xlsx.writeBuffer();
+  const blob = new Blob([buffer], { type: "application/octet-stream" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  const dataInicioStr = document.getElementById("dataInicio").value || "evolucao";
+  a.href = url;
+  a.download = `Evolucao_Pensao_${dataInicioStr}.xlsx`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+});
+
+recalcularPercentuais();
+
+})();
+</script>
+</body>
+</html>
