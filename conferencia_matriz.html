@@ -1,0 +1,1517 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conferência de Matriz de Cálculo | Sistema Jurídico Costa Nunes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+<style>
+:root{
+  --preto:#0a0a0a; --ouro:#c9a84c; --creme:#f5f3ee; --branco:#ffffff;
+  --texto:#1c1c1c; --texto-suave:#5a5650; --linha:#ddd8ce;
+  --erro:#a4243b; --erro-bg:#f8e8ea; --atencao:#8a6d1f; --atencao-bg:#fbf3dd;
+  --info:#2f5d7c; --info-bg:#e8f0f6; --ok:#2f6b43; --ok-bg:#e7f2eb;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--creme);color:var(--texto);font-family:'IBM Plex Sans',system-ui,-apple-system,sans-serif;font-size:15px;line-height:1.55}
+header.topo{background:var(--preto);border-bottom:2px solid var(--ouro);color:var(--branco);padding:18px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+header.topo h1{font-family:Georgia,'Times New Roman',serif;font-size:21px;font-weight:400;margin:0;letter-spacing:.2px}
+header.topo .sub{color:#b9b3a6;font-size:12.5px;margin-top:3px;font-family:'IBM Plex Mono',monospace}
+.badge-versao{background:var(--ouro);color:var(--preto);font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;padding:4px 10px;border-radius:3px;white-space:nowrap}
+main{max-width:1180px;margin:0 auto;padding:26px 20px 60px}
+section.bloco{background:var(--branco);border:1px solid var(--linha);border-radius:4px;padding:22px 24px;margin-bottom:22px}
+section.bloco > h2{font-family:Georgia,serif;font-size:17px;font-weight:400;margin:0 0 4px;color:var(--preto)}
+section.bloco > h2 .num{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ouro);margin-right:8px;font-weight:600}
+.desc{color:var(--texto-suave);font-size:13.5px;margin:0 0 18px}
+.aviso-lgpd{background:#f0ece1;border-left:3px solid var(--ouro);padding:13px 16px;border-radius:0 3px 3px 0;font-size:13.2px;color:#443f36;margin-bottom:18px}
+.aviso-lgpd strong{color:var(--preto)}
+.dropzone{display:block;border:1.5px dashed #bfb8a8;border-radius:4px;background:#fbfaf7;padding:34px 20px;text-align:center;cursor:pointer;transition:.15s}
+.importado{display:flex;align-items:center;gap:15px;border:1.5px solid #8fbf9f;background:var(--ok-bg);border-radius:4px;padding:14px 16px;margin-top:11px;animation:surge .28s ease-out}
+.documentos-pendentes{margin-top:11px;font-size:12.8px;color:var(--texto-suave)}
+.documentos-pendentes b{color:var(--texto)}
+@keyframes surge{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:none}}
+.importado .selo{width:34px;height:34px;min-width:34px;border-radius:50%;background:var(--ok);color:#fff;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:700;line-height:1}
+.importado .conteudo{flex:1}
+.importado .conteudo strong{display:block;font-size:15px;color:#1d4a2c}
+.importado .detalhes{font-family:'IBM Plex Mono',monospace;font-size:12.3px;color:#3f6b4e;margin-top:3px}
+.ambiente{margin-top:10px;font-family:'IBM Plex Mono',monospace;font-size:11.8px;color:var(--texto-suave);display:flex;gap:14px;flex-wrap:wrap}
+.ambiente b{font-weight:600;color:var(--texto)}
+.ambiente .falha{color:var(--erro);font-weight:600}
+.ambiente .ok{color:var(--ok);font-weight:600}
+.dropzone:hover,.dropzone.ativo{border-color:var(--ouro);background:#f7f3e8}
+.dropzone .icone{font-family:'IBM Plex Mono',monospace;font-size:26px;color:var(--ouro);margin-bottom:8px}
+.dropzone .titulo{font-weight:600;font-size:14.5px}
+.dropzone .hint{color:var(--texto-suave);font-size:12.8px;margin-top:5px}
+.grid-param{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:16px;margin-top:4px}
+label.campo{display:block;font-size:12.5px;font-weight:600;color:var(--texto-suave);text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px}
+input[type=text],input[type=number],input[type=date],select{width:100%;padding:9px 11px;border:1px solid var(--linha);border-radius:3px;font-family:'IBM Plex Sans',sans-serif;font-size:14px;background:var(--branco);color:var(--texto)}
+input:focus,select:focus{outline:none;border-color:var(--ouro);box-shadow:0 0 0 2px rgba(201,168,76,.18)}
+.nota-campo{font-size:11.8px;color:var(--texto-suave);margin-top:5px;font-family:'IBM Plex Mono',monospace}
+button{font-family:'IBM Plex Sans',sans-serif;font-size:14px;font-weight:600;border-radius:3px;cursor:pointer;padding:10px 20px;border:1px solid transparent;transition:.15s}
+button.primario{background:var(--preto);color:var(--branco);border-color:var(--preto)}
+button.primario:hover:not(:disabled){background:#262626}
+button.secundario{background:var(--branco);color:var(--preto);border-color:#c7c0b1}
+button.secundario:hover:not(:disabled){border-color:var(--ouro);background:#faf7f0}
+button:disabled{opacity:.45;cursor:not-allowed}
+.barra-acoes{display:flex;gap:11px;flex-wrap:wrap;margin-top:20px;align-items:center}
+.status{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--texto-suave)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:13px;margin-bottom:22px}
+.card{border:1px solid var(--linha);border-radius:4px;padding:14px 15px;background:#fbfaf7}
+.card .rotulo{font-size:11.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--texto-suave);font-weight:600}
+.card .valor{font-family:'IBM Plex Mono',monospace;font-size:25px;font-weight:600;margin-top:5px;line-height:1.1}
+.card .detalhe{font-size:12px;color:var(--texto-suave);margin-top:4px}
+.card.erro{background:var(--erro-bg);border-color:#e3c3c9}.card.erro .valor{color:var(--erro)}
+.card.atencao{background:var(--atencao-bg);border-color:#e6d6a8}.card.atencao .valor{color:var(--atencao)}
+.card.ok{background:var(--ok-bg);border-color:#c2ddcb}.card.ok .valor{color:var(--ok)}
+.card.neutro .valor{color:var(--preto)}
+table{width:100%;border-collapse:collapse;font-size:13.2px}
+th{background:var(--preto);color:var(--branco);text-align:left;padding:9px 10px;font-size:11.6px;text-transform:uppercase;letter-spacing:.4px;font-weight:600;position:sticky;top:0;z-index:2}
+td{padding:8px 10px;border-bottom:1px solid #eae5da;vertical-align:top}
+tbody tr:hover{background:#faf8f3}
+td.num{font-family:'IBM Plex Mono',monospace;text-align:right;white-space:nowrap}
+.tag{display:inline-block;font-size:10.8px;font-weight:600;padding:2px 7px;border-radius:2px;text-transform:uppercase;letter-spacing:.4px;white-space:nowrap}
+.tag.erro{background:var(--erro-bg);color:var(--erro)}
+.tag.atencao{background:var(--atencao-bg);color:var(--atencao)}
+.tag.info{background:var(--info-bg);color:var(--info)}
+.tabela-wrap{max-height:520px;overflow:auto;border:1px solid var(--linha);border-radius:4px}
+.filtros{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;align-items:flex-end}
+.filtros > div{min-width:150px}
+.regra-lista{margin:0;padding:0;list-style:none}
+.regra-lista li{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid #eae5da;align-items:flex-start}
+.regra-lista li:last-child{border-bottom:none}
+.regra-cod{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:var(--ouro);min-width:34px;padding-top:2px}
+.regra-txt{flex:1}
+.regra-txt strong{display:block;font-size:13.6px;margin-bottom:2px}
+.regra-txt span{font-size:12.6px;color:var(--texto-suave)}
+.regra-res{font-family:'IBM Plex Mono',monospace;font-size:12.5px;white-space:nowrap;padding-top:2px}
+.oculto{display:none}
+footer{text-align:center;color:var(--texto-suave);font-size:12px;padding:26px 20px;font-family:'IBM Plex Mono',monospace}
+.erro-box{background:var(--erro-bg);border-left:3px solid var(--erro);padding:13px 16px;border-radius:0 3px 3px 0;color:#6d1a28;font-size:13.4px;margin-top:16px}
+@media (max-width:640px){main{padding:18px 13px 44px}section.bloco{padding:17px 15px}}
+</style>
+</head>
+<body>
+
+<header class="topo">
+  <div>
+    <h1>Conferência de Matriz de Cálculo</h1>
+    <div class="sub">Sistema Jurídico Costa Nunes &middot; Módulo 05</div>
+  </div>
+  <span class="badge-versao" id="badgeVersao">v1.3.0</span>
+</header>
+
+<main>
+
+<section class="bloco">
+  <h2><span class="num">01</span>Importação da base</h2>
+  <p class="desc">Aceita o PDF da matriz de cálculo do PJe-Calc Cidadão e planilhas .xlsx com a mesma estrutura de rubricas.</p>
+
+  <div class="aviso-lgpd">
+    <strong>Tratamento de dados (art. 5º, II, da Lei 13.709/2018).</strong>
+    O processamento ocorre inteiramente no navegador. Nenhum arquivo é enviado a servidor.
+    Nos três documentos, apenas linhas acompanhadas de competência e os valores correspondentes são carregados.
+    Na matriz, as linhas mmm/aaaa; na ficha financeira, a rubrica 051001 dos proventos e o ano de referência;
+    no realinhamento, as datas de evolução e a coluna Salário Simulação ECT V2. Nome, CPF, PIS/NIT, matrícula,
+    data de nascimento, lotação, número do processo, número do relatório e o próprio nome do arquivo são descartados
+    e não constam da tela nem do relatório exportado. A identificação do lote usa exclusivamente o rótulo que você digitar abaixo.
+  </div>
+
+  <label class="dropzone" id="dropzone" for="inputArquivo">
+    <div class="icone">[ + ]</div>
+    <div class="titulo">Selecione os arquivos ou arraste até aqui</div>
+    <div class="hint">matriz do PJe-Calc (PDF ou .xlsx), ficha financeira e realinhamento (PDF). O tipo é reconhecido pelo conteúdo</div>
+    <input type="file" id="inputArquivo" class="oculto" multiple>
+  </label>
+
+  <div id="listaImportados"></div>
+
+  <div class="documentos-pendentes" id="pendentes"></div>
+
+  <div class="ambiente" id="painelAmbiente">verificando ambiente...</div>
+
+  <div class="grid-param" style="margin-top:18px">
+    <div>
+      <label class="campo" for="rotuloCaso">Rótulo do caso</label>
+      <input type="text" id="rotuloCaso" value="Conferência 001" maxlength="60">
+      <div class="nota-campo">Texto livre, sem dado pessoal</div>
+    </div>
+  </div>
+</section>
+
+<section class="bloco">
+  <h2><span class="num">02</span>Parâmetros de conferência</h2>
+  <p class="desc">Os valores abaixo reproduzem a convenção já validada na matriz. Ajuste apenas se o caso concreto exigir.</p>
+
+  <div class="grid-param">
+    <div>
+      <label class="campo" for="dataInicio">Início do período</label>
+      <input type="date" id="dataInicio" value="2005-04-05">
+      <div class="nota-campo">Padrão 05/04/2005</div>
+    </div>
+    <div>
+      <label class="campo" for="fatorAbril">Fator do mês de início</label>
+      <input type="text" id="fatorAbril" value="25/30" readonly>
+      <div class="nota-campo" id="notaFator">Mês comercial de 30 dias, menos 5 dias anteriores</div>
+    </div>
+    <div>
+      <label class="campo" for="tolerancia">Tolerância (R$)</label>
+      <input type="number" id="tolerancia" value="0.02" step="0.01" min="0">
+      <div class="nota-campo">Absorve arredondamento de centavos</div>
+    </div>
+    <div>
+      <label class="campo" for="limiteVariacao">Variação salarial de alerta</label>
+      <input type="number" id="limiteVariacao" value="20" step="1" min="1">
+      <div class="nota-campo">Percentual sem motivo lançado. Zero desliga</div>
+    </div>
+    <div>
+      <label class="campo" for="margemCoerencia">Margem de coerência</label>
+      <input type="number" id="margemCoerencia" value="1" step="0.1" min="0">
+      <div class="nota-campo">Pontos percentuais contra o motivo</div>
+    </div>
+  </div>
+
+  <ul class="regra-lista" style="margin-top:20px" id="listaRegras">
+    <li><span class="regra-cod">R1</span><span class="regra-txt"><strong>Diferença efetiva</strong><span>Diferença mensal igual a devido menos recebido, rubrica a rubrica.</span></span><span class="regra-res" id="resR1">—</span></li>
+    <li><span class="regra-cod">R2</span><span class="regra-txt"><strong>Devido proporcional</strong><span>Devido da rubrica igual a (recebido da rubrica dividido pelo salário recebido) vezes o salário devido.</span></span><span class="regra-res" id="resR2">—</span></li>
+    <li><span class="regra-cod">R3</span><span class="regra-txt"><strong>Devido zerado</strong><span>Devido igual a zero implica diferença zero. Nenhuma diferença negativa em qualquer competência.</span></span><span class="regra-res" id="resR3">—</span></li>
+    <li><span class="regra-cod">R4</span><span class="regra-txt"><strong>Proporcionalidade do mês de início</strong><span>No mês em que o período começa, a diferença corresponde à fração de dias apurados.</span></span><span class="regra-res" id="resR4">—</span></li>
+    <li><span class="regra-cod">R5</span><span class="regra-txt"><strong>Recebido contra a ficha financeira</strong><span>Salário recebido igual ao lançado na rubrica 051001 dos proventos, competência a competência.</span></span><span class="regra-res" id="resR5">—</span></li>
+    <li><span class="regra-cod">R6</span><span class="regra-txt"><strong>Devido contra o realinhamento</strong><span>Salário devido igual à coluna Salário Simulação ECT V2, com o valor de cada data vigorando até a data seguinte.</span></span><span class="regra-res" id="resR6">—</span></li>
+    <li><span class="regra-cod">OBS</span><span class="regra-txt"><strong>Observações estruturais</strong><span>Sequência de competências, base de cálculo ausente, células ilegíveis e variação do salário recebido confrontada com o reajuste lançado na coluna Motivo.</span></span><span class="regra-res" id="resOBS">—</span></li>
+  </ul>
+
+  <div class="barra-acoes">
+    <button class="primario" id="btnConferir" disabled>Conferir base</button>
+    <button class="secundario" id="btnExcel" disabled>Exportar relatório em Excel</button>
+    <span class="status" id="statusTexto">Nenhum arquivo carregado</span>
+  </div>
+
+  <div class="erro-box oculto" id="caixaErro"></div>
+</section>
+
+<section class="bloco oculto" id="blocoResultado">
+  <h2><span class="num">03</span>Resultado</h2>
+  <p class="desc" id="descResultado"></p>
+
+  <div class="cards" id="cardsResumo"></div>
+
+  <div class="filtros">
+    <div>
+      <label class="campo" for="filtroSeveridade">Severidade</label>
+      <select id="filtroSeveridade"><option value="">Todas</option><option value="ERRO">Erro</option><option value="ATENÇÃO">Atenção</option><option value="INFO">Informação</option></select>
+    </div>
+    <div>
+      <label class="campo" for="filtroRegra">Regra</label>
+      <select id="filtroRegra"><option value="">Todas</option></select>
+    </div>
+    <div>
+      <label class="campo" for="filtroRubrica">Rubrica</label>
+      <select id="filtroRubrica"><option value="">Todas</option></select>
+    </div>
+    <div style="flex:1;min-width:190px">
+      <label class="campo" for="filtroBusca">Competência</label>
+      <input type="text" id="filtroBusca" placeholder="ex.: abr/2005">
+    </div>
+  </div>
+
+  <div class="tabela-wrap">
+    <table id="tabelaOcorrencias">
+      <thead><tr>
+        <th>Competência</th><th>Rubrica</th><th>Regra</th><th>Severidade</th>
+        <th style="text-align:right">Recebido</th><th style="text-align:right">Devido</th>
+        <th style="text-align:right">Informado</th><th style="text-align:right">Esperado</th>
+        <th style="text-align:right">Delta</th><th>Observação</th>
+      </tr></thead>
+      <tbody id="corpoTabela"></tbody>
+    </table>
+  </div>
+  <div class="status" id="contadorTabela" style="margin-top:10px"></div>
+</section>
+
+</main>
+
+<footer>Costa Nunes Advogados Associados &middot; OAB/GO 1336 &middot; processamento local, sem envio de dados</footer>
+
+<script>
+'use strict';
+
+const VERSAO = '1.3.0';
+const FONTES = {
+  pdfjs:  ['https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',
+           'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js'],
+  worker: ['https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js',
+           'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js'],
+  exceljs:['https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js',
+           'https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js']
+};
+let workerPronto = false;
+
+function carregarScript(url){
+  return new Promise((ok, falha) => {
+    const s = document.createElement('script');
+    s.src = url;
+    s.onload = () => ok(url);
+    s.onerror = () => falha(new Error('não foi possível carregar ' + url));
+    document.head.appendChild(s);
+  });
+}
+
+// Se a rede bloquear o primeiro provedor, tenta o segundo antes de desistir.
+async function garantirBibliotecas(){
+  if (typeof pdfjsLib === 'undefined'){
+    try { await carregarScript(FONTES.pdfjs[1]); } catch (e){ console.error('[conferência]', e.message); }
+  }
+  if (typeof ExcelJS === 'undefined'){
+    try { await carregarScript(FONTES.exceljs[1]); } catch (e){ console.error('[conferência]', e.message); }
+  }
+  atualizarPainelAmbiente();
+}
+
+function atualizarPainelAmbiente(){
+  const painel = $('painelAmbiente');
+  if (!painel) return;
+  const marca = (nome, ok) => '<span>' + nome + ': <span class="' + (ok ? 'ok' : 'falha') + '">' +
+                              (ok ? 'ok' : 'não carregou') + '</span></span>';
+  const pdfOk = typeof pdfjsLib !== 'undefined';
+  const xlsOk = typeof ExcelJS !== 'undefined';
+  painel.innerHTML = '<span>módulo: <b>v' + VERSAO + '</b></span>' +
+                     '<span>origem: <b>' + location.protocol + '</b></span>' +
+                     marca('PDF.js', pdfOk) + marca('ExcelJS', xlsOk);
+  if (!pdfOk || !xlsOk){
+    mostrarErro('As bibliotecas de leitura não carregaram (PDF.js ' + (pdfOk ? 'ok' : 'ausente') +
+      ', ExcelJS ' + (xlsOk ? 'ok' : 'ausente') + '). Sem elas a importação não funciona. ' +
+      'Isso costuma indicar falta de conexão no momento da abertura ou bloqueio de CDN pela rede. ' +
+      'Recarregue a página conectado à internet.');
+  }
+}
+
+// O worker do PDF.js não inicializa quando a página é aberta por file:// ou quando a rede
+// bloqueia o script do CDN. Baixar o worker e servi-lo como blob local contorna os dois casos.
+async function prepararWorker(){
+  if (workerPronto || typeof pdfjsLib === 'undefined') return;
+  for (const url of FONTES.worker){
+    try {
+      const resp = await fetch(url, {mode:'cors'});
+      if (resp.ok){
+        const codigo = await resp.text();
+        pdfjsLib.GlobalWorkerOptions.workerSrc =
+          URL.createObjectURL(new Blob([codigo], {type:'text/javascript'}));
+        workerPronto = true;
+        return;
+      }
+    } catch (e){
+      console.warn('[conferência] worker indisponível em ' + url + ':', e.message);
+    }
+  }
+  pdfjsLib.GlobalWorkerOptions.workerSrc = FONTES.worker[0];
+  workerPronto = true;
+}
+
+const MESES = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+const SUB_COLUNAS = ['RECEBIDO','DEVIDO','DIFERENCA'];
+const RE_COMPETENCIA = /^(jan|fev|mar|abr|mai|jun|jul|ago|set|out|nov|dez)\/(\d{4})$/i;
+const RE_VALOR = /^-?[\d.]*\d(,\d{1,2})?$|^-$/;
+const COD_SALARIO = '051001';   // rubrica de salário na ficha financeira
+
+let BASE = null;           // matriz de cálculo: { rubricas:[], linhas:[] }
+let FICHA = null;          // ficha financeira: { serie:{competência: valor}, anos:[] }
+let REALINHAMENTO = null;  // realinhamento: { marcos:[{data, ano, mes, valor, motivo}] }
+let OCORRENCIAS = [];
+let RESUMO = null;
+
+/* ---------- utilidades ---------- */
+
+function normalizar(txt){
+  return (txt||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toUpperCase().trim();
+}
+
+function paraNumero(txt){
+  const s = (txt||'').trim();
+  if (s === '' || s === '-' || s === '–' || s === '—') return 0;
+  const limpo = s.replace(/\./g,'').replace(',','.');
+  const n = Number(limpo);
+  return Number.isFinite(n) ? n : null;
+}
+
+// Texto vindo dos documentos não pode ser interpretado como marcação ao ir para a tela.
+function escapar(txt){
+  return String(txt === null || txt === undefined ? '' : txt)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+function fmt(n){
+  if (n === null || n === undefined) return '—';
+  return n.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+
+function arred(n){ return Math.round((n + Number.EPSILON) * 100) / 100; }
+
+function indiceCompetencia(mes){
+  const m = mes.match(RE_COMPETENCIA);
+  if (!m) return null;
+  return Number(m[2]) * 12 + MESES.indexOf(m[1].toLowerCase());
+}
+
+function competenciaDe(ano, mesIdx){ return MESES[mesIdx] + '/' + ano; }
+
+/* ---------- leitura de PDF ---------- */
+
+// Abre o PDF e devolve, por página, as linhas visuais com a posição de cada trecho de texto.
+// É a base comum dos três documentos lidos pelo módulo.
+async function extrairPaginas(arrayBuffer){
+  if (typeof pdfjsLib === 'undefined'){
+    throw new Error('a biblioteca de leitura de PDF (PDF.js) não carregou. Verifique a conexão ou se o navegador bloqueou o script do CDN.');
+  }
+  await prepararWorker();
+
+  let pdf;
+  try {
+    pdf = await pdfjsLib.getDocument({data: arrayBuffer, isEvalSupported: false}).promise;
+  } catch (e){
+    console.error('[conferência] falha ao abrir o PDF:', e);
+    if (/password|senha/i.test(e.message || '')){
+      throw new Error('o PDF está protegido por senha. Salve uma cópia sem proteção e tente novamente.');
+    }
+    throw new Error('o navegador não conseguiu abrir o PDF (' + (e.message || e.name) + ').' +
+      (location.protocol === 'file:' ? ' A página está aberta por file://, o que costuma impedir a leitura. Sirva a pasta por HTTP ou use o endereço do sistema no GitHub Pages.' : ''));
+  }
+
+  const paginas = [];
+  let itensTexto = 0;
+  for (let p = 1; p <= pdf.numPages; p++){
+    const pagina = await pdf.getPage(p);
+    const conteudo = await pagina.getTextContent();
+    const itens = conteudo.items
+      .filter(it => it.str && it.str.trim() !== '')
+      .map(it => ({
+        texto: it.str.trim(),
+        x0: it.transform[4],
+        x1: it.transform[4] + (it.width || 0),
+        y: Math.round(it.transform[5] * 2) / 2
+      }));
+    itensTexto += itens.length;
+
+    const porLinha = new Map();
+    for (const it of itens){
+      let chave = null;
+      for (const k of porLinha.keys()){ if (Math.abs(k - it.y) <= 2.2){ chave = k; break; } }
+      if (chave === null) chave = it.y;
+      if (!porLinha.has(chave)) porLinha.set(chave, []);
+      porLinha.get(chave).push(it);
+    }
+    const linhas = [...porLinha.entries()]
+      .sort((a,b) => b[0] - a[0])
+      .map(e => e[1].sort((a,b) => a.x0 - b.x0));
+
+    paginas.push({numero: p, linhas, texto: linhas.map(l => l.map(w => w.texto).join(' ')).join('\n')});
+  }
+  return {pdf, paginas, itensTexto};
+}
+
+// O tipo do documento vem do próprio conteúdo, não do nome do arquivo.
+function identificarDocumento(paginas){
+  const amostra = paginas.slice(0, 6).map(p => normalizar(p.texto)).join(' ');
+  if (amostra.includes('FICHA FINANCEIRA') || amostra.includes('TIPO DE VERBA')) return 'ficha';
+  if (amostra.includes('EVOLUCAO DE RS') || amostra.includes('SIMULACAO ECT')) return 'realinhamento';
+  if (amostra.includes('RECEBIDO') && amostra.includes('DIFERENCA')) return 'matriz';
+  return null;
+}
+
+async function lerPdf(arrayBuffer){
+  const {pdf, paginas, itensTexto} = await extrairPaginas(arrayBuffer);
+  const tipo = identificarDocumento(paginas);
+
+  if (tipo === 'ficha') return await lerFichaPdf(pdf, paginas);
+  if (tipo === 'realinhamento') return await lerRealinhamentoPdf(pdf, paginas);
+
+  const linhasBase = [];
+  const diagnostico = {paginas: pdf.numPages, comCabecalho: 0, itensTexto};
+  let rubricas = null;
+
+  for (const pag of paginas){
+    const linhas = pag.linhas;
+
+    // cabeçalho de subcolunas: linha com mais ocorrências de RECEBIDO
+    let idxCabecalho = -1, melhor = 0;
+    linhas.forEach((ln, i) => {
+      const qtd = ln.filter(it => normalizar(it.texto) === 'RECEBIDO').length;
+      if (qtd > melhor){ melhor = qtd; idxCabecalho = i; }
+    });
+    if (idxCabecalho < 0) continue;
+
+    const colunas = linhas[idxCabecalho]
+      .filter(it => ['RECEBIDO','DEVIDO','DIFERENCA'].includes(normalizar(it.texto)))
+      .sort((a,b) => a.x1 - b.x1);
+    if (colunas.length < 3 || colunas.length % 3 !== 0) continue;
+    diagnostico.comCabecalho++;
+    const nGrupos = colunas.length / 3;
+
+    // títulos das rubricas: linha acima do cabeçalho com textos posicionados sobre cada tripla
+    if (!rubricas){
+      rubricas = nomesDasRubricas(linhas, idxCabecalho, colunas, nGrupos);
+    }
+
+    // linhas de dados
+    for (let i = idxCabecalho + 1; i < linhas.length; i++){
+      const ln = linhas[i];
+      if (!ln.length) continue;
+      const primeiro = ln[0].texto.replace(/\s+/g,'');
+      if (!RE_COMPETENCIA.test(primeiro)) continue;   // descarta cabeçalho e dados de identificação
+
+      const competencia = primeiro.toLowerCase();
+      const limiteEsq = colunas[0].x1 - 20;
+      let motivo = ln.slice(1).filter(it => it.x1 < limiteEsq).map(it => it.texto).join(' ')
+                     .replace(/\s+0\s+0\s*$/,'').trim();
+      if (/^[-\s]+$/.test(motivo)) motivo = '';
+      const candidatos = ln.slice(1).filter(it => it.x1 >= limiteEsq).sort((a,b) => a.x0 - b.x0);
+
+      const celulas = [];
+      let cursor = 0;
+      for (const col of colunas){
+        let texto = '';
+        while (cursor < candidatos.length && candidatos[cursor].x1 <= col.x1 + 4){
+          texto += candidatos[cursor].texto;
+          cursor++;
+        }
+        celulas.push(texto.trim());
+      }
+
+      const valores = [];
+      for (let g = 0; g < nGrupos; g++){
+        valores.push({
+          RECEBIDO: celulas[g*3],
+          DEVIDO:   celulas[g*3 + 1],
+          DIFERENCA:celulas[g*3 + 2]
+        });
+      }
+      linhasBase.push({competencia, motivo, valores});
+    }
+  }
+
+  console.info('[conferência] diagnóstico da leitura:', diagnostico, 'linhas reconhecidas:', linhasBase.length);
+
+  if (!linhasBase.length){
+    if (diagnostico.itensTexto === 0){
+      throw new Error('o PDF não tem camada de texto, o que indica documento digitalizado como imagem. ' +
+        'A leitura automática só funciona com o PDF gerado pelo próprio PJe-Calc ou pelo Excel. ' +
+        '(páginas lidas: ' + diagnostico.paginas + ')');
+    }
+    if (diagnostico.comCabecalho === 0){
+      throw new Error('nenhuma página traz o cabeçalho RECEBIDO, DEVIDO e DIFERENÇA por rubrica. ' +
+        'Confirme que o arquivo é a matriz de cálculo e não outro relatório do PJe-Calc. ' +
+        '(páginas lidas: ' + diagnostico.paginas + ', trechos de texto: ' + diagnostico.itensTexto + ')');
+    }
+    throw new Error('o cabeçalho de rubricas foi localizado em ' + diagnostico.comCabecalho +
+      ' página(s), mas nenhuma linha de competência no formato mmm/aaaa foi reconhecida. ' +
+      'Envie o arquivo para análise do layout.');
+  }
+  return {tipo:'matriz', rubricas: rubricas || rubricasGenericas(linhasBase[0].valores.length), linhas: linhasBase};
+}
+
+function nomesDasRubricas(linhas, idxCabecalho, colunas, nGrupos){
+  const nomes = new Array(nGrupos).fill(null);
+  for (let i = idxCabecalho - 1; i >= 0 && i >= idxCabecalho - 6; i--){
+    for (const it of linhas[i]){
+      const t = normalizar(it.texto);
+      if (!t || /^05\d{4}$/.test(t)) continue;
+      const centro = (it.x0 + it.x1) / 2;
+      for (let g = 0; g < nGrupos; g++){
+        const ini = colunas[g*3].x1 - 26;
+        const fim = colunas[g*3 + 2].x1 + 6;
+        if (centro >= ini && centro <= fim){
+          nomes[g] = nomes[g] ? (nomes[g] + ' ' + it.texto.trim()) : it.texto.trim();
+        }
+      }
+    }
+    if (nomes.every(n => n)) break;
+  }
+  return nomes.map((n,i) => (n && n.length > 1) ? n.replace(/\s+/g,' ').trim() : 'Rubrica ' + (i+1));
+}
+
+function rubricasGenericas(n){
+  return Array.from({length:n}, (_,i) => 'Rubrica ' + (i+1));
+}
+
+/* ---------- leitura da ficha financeira (salário recebido, rubrica 051001) ---------- */
+
+// Carrega apenas o ano de referência e os doze valores mensais da rubrica de salário.
+// Cabeçalho, identificação do empregado e demais rubricas não entram na memória do sistema.
+async function lerFichaPdf(pdf, paginas){
+  const serie = {};
+  const anos = [];
+  let linhasRubrica = 0;
+
+  for (const p of paginas){
+    if (!/PROVENTOS/i.test(p.texto)) continue;
+    const mAno = p.texto.match(/Refer[eê]ncia\s*-\s*(\d{4})/i);
+    if (!mAno) continue;
+    const ano = Number(mAno[1]);
+
+    for (const ln of p.linhas){
+      const primeiro = ln[0] && ln[0].texto.replace(/\s+/g,'');
+      if (primeiro !== COD_SALARIO) continue;
+      const valores = [];
+      for (const w of ln){
+        const t = w.texto.replace(/\s+/g,'');
+        if (/^-?[\d.]*\d,\d{2}$/.test(t)) valores.push(t);
+      }
+      if (valores.length < 12) continue;
+      linhasRubrica++;
+      if (!anos.includes(ano)) anos.push(ano);
+      for (let i = 0; i < 12; i++) serie[MESES[i] + '/' + ano] = paraNumero(valores[i]);
+    }
+  }
+  if (!linhasRubrica) throw new Error('nenhuma linha da rubrica ' + COD_SALARIO + ' foi encontrada nos proventos da ficha financeira.');
+  anos.sort((a,b) => a-b);
+  return {tipo:'ficha', serie, anos, competencias: Object.keys(serie).length};
+}
+
+/* ---------- leitura do realinhamento (salário devido, coluna Simulação ECT V2) ---------- */
+
+// Carrega apenas as linhas de data e os valores da evolução. Processo, partes e matrícula ficam de fora.
+async function lerRealinhamentoPdf(pdf, paginas){
+  const marcos = [];
+
+  for (const p of paginas){
+    const cab = p.linhas.find(ln => {
+      const txt = ln.map(w => normalizar(w.texto)).join(' ');
+      return txt.includes('SIMULACAO') && txt.includes('ECT');
+    });
+    const colB = localizarColunaSimulacao(p);
+    if (!colB) continue;
+
+    for (const ln of p.linhas){
+      if (!ln.length) continue;
+      const data = ln[0].texto.replace(/\s+/g,'');
+      if (!/^\d{2}\/\d{2}\/\d{4}$/.test(data)) continue;
+      if (ln[0].x0 > colB.x1 - 300) continue;      // descarta a tabela resumo, mais à direita
+
+      const texto = (alvo, largura) => ln.filter(w => alvo - largura < w.x1 && w.x1 <= alvo + 3)
+                                          .sort((a,b) => a.x0 - b.x0).map(w => w.texto).join('');
+      const bruto = texto(colB.x1, 42);
+      const valor = paraNumero(bruto);
+      if (valor === null || bruto === '') continue;
+
+      const motivo = ln.filter(w => colB.x1 - 215 < w.x1 && w.x1 <= colB.x1 - 40)
+                       .sort((a,b) => a.x0 - b.x0).map(w => w.texto).join(' ').trim();
+      const [dia, mes, ano] = data.split('/').map(Number);
+      marcos.push({data, dia, mes, ano, valor, motivo: motivo === '-' ? '' : motivo});
+    }
+  }
+  if (!marcos.length) throw new Error('nenhuma linha de evolução foi reconhecida no realinhamento. Confirme que o PDF contém a tabela com a coluna Salário Simulação ECT V2.');
+  return {tipo:'realinhamento', marcos, primeira: marcos[0].data, ultima: marcos[marcos.length-1].data};
+}
+
+// A coluna do salário Simulação ECT V2 é localizada pelo próprio título, e não por posição fixa.
+// O título da coluna de motivo também cita a simulação, por isso é descartado aqui.
+function localizarColunaSimulacao(pagina){
+  for (const ln of pagina.linhas){
+    for (const w of ln){
+      const t = normalizar(w.texto);
+      if (t.includes('SIMULACAO') && t.includes('ECT') && !t.includes('MOTIV')){
+        return {x1: w.x1 + 4, titulo: w.texto};
+      }
+    }
+  }
+  return null;
+}
+
+/* ---------- leitura de Excel ---------- */
+
+async function lerExcel(arrayBuffer){
+  const wb = new ExcelJS.Workbook();
+  await wb.xlsx.load(arrayBuffer);
+
+  for (const ws of wb.worksheets){
+    const matriz = [];
+    ws.eachRow({includeEmpty:true}, (row) => {
+      const vals = [];
+      row.eachCell({includeEmpty:true}, (cell, col) => {
+        let v = cell.value;
+        if (v && typeof v === 'object'){
+          if (v.result !== undefined) v = v.result;
+          else if (v.richText) v = v.richText.map(r => r.text).join('');
+          else if (v.text) v = v.text;
+        }
+        vals[col-1] = v;
+      });
+      matriz.push(vals);
+    });
+
+    const achado = localizarCabecalhoExcel(matriz);
+    if (!achado) continue;
+
+    const {linhaCabecalho, colunas} = achado;
+    const nGrupos = colunas.length / 3;
+    const rubricas = nomesRubricasExcel(matriz, linhaCabecalho, colunas, nGrupos);
+    const linhas = [];
+
+    for (let r = linhaCabecalho + 1; r < matriz.length; r++){
+      const linha = matriz[r] || [];
+      const competencia = competenciaDaCelula(linha);
+      if (!competencia) continue;
+
+      const motivo = linha.slice(1, colunas[0]).filter(v => typeof v === 'string' && v.trim() && !/^-$/.test(v.trim())).join(' ').trim();
+      const valores = [];
+      for (let g = 0; g < nGrupos; g++){
+        valores.push({
+          RECEBIDO: textoCelula(linha[colunas[g*3]]),
+          DEVIDO:   textoCelula(linha[colunas[g*3 + 1]]),
+          DIFERENCA:textoCelula(linha[colunas[g*3 + 2]])
+        });
+      }
+      linhas.push({competencia, motivo, valores});
+    }
+    if (linhas.length) return {rubricas, linhas};
+  }
+  throw new Error('A planilha não contém uma matriz reconhecível. É esperada uma linha com as colunas RECEBIDO, DEVIDO e DIFERENÇA por rubrica.');
+}
+
+function localizarCabecalhoExcel(matriz){
+  for (let r = 0; r < Math.min(matriz.length, 40); r++){
+    const linha = matriz[r] || [];
+    const colunas = [];
+    linha.forEach((v, c) => {
+      const t = normalizar(typeof v === 'string' ? v : '');
+      if (SUB_COLUNAS.includes(t)) colunas.push({c, t});
+    });
+    if (colunas.length >= 3 && colunas.length % 3 === 0){
+      const sequenciaOk = colunas.every((col, i) => col.t === SUB_COLUNAS[i % 3]);
+      if (sequenciaOk) return {linhaCabecalho: r, colunas: colunas.map(x => x.c)};
+    }
+  }
+  return null;
+}
+
+function nomesRubricasExcel(matriz, linhaCabecalho, colunas, nGrupos){
+  const nomes = new Array(nGrupos).fill(null);
+  for (let r = linhaCabecalho - 1; r >= 0 && r >= linhaCabecalho - 6; r--){
+    const linha = matriz[r] || [];
+    for (let g = 0; g < nGrupos; g++){
+      if (nomes[g]) continue;
+      for (let c = colunas[g*3]; c <= colunas[g*3 + 2]; c++){
+        const v = linha[c];
+        if (typeof v === 'string' && v.trim().length > 1 && !/^05\d{4}$/.test(v.trim())){
+          nomes[g] = v.trim(); break;
+        }
+      }
+    }
+    if (nomes.every(n => n)) break;
+  }
+  return nomes.map((n,i) => n || ('Rubrica ' + (i+1)));
+}
+
+function competenciaDaCelula(linha){
+  for (let c = 0; c < Math.min(linha.length, 3); c++){
+    const v = linha[c];
+    if (typeof v === 'string'){
+      const t = v.trim().toLowerCase().replace(/\s+/g,'');
+      if (RE_COMPETENCIA.test(t)) return t;
+    } else if (v instanceof Date){
+      return competenciaDe(v.getFullYear(), v.getMonth());
+    }
+  }
+  return null;
+}
+
+function textoCelula(v){
+  if (v === null || v === undefined || v === '') return '-';
+  if (typeof v === 'number') return v.toFixed(2).replace('.',',');
+  return String(v).trim();
+}
+
+/* ---------- conferência ---------- */
+
+// Confronta a variação do salário recebido com o que a coluna Motivo declara.
+// Motivo com percentual ou valor em reais isolado: compara variação efetiva e valor declarado.
+// Motivo composto, de promoção ou ausente: aplica apenas o limite percentual.
+function avaliarVariacaoSalarial(linha, salRec, salarioAnterior, params){
+  const motivo = (linha.motivo || '').trim();
+  const variacaoPct = (salRec - salarioAnterior) / salarioAnterior * 100;
+  const variacaoAbs = salRec - salarioAnterior;
+  const margem = params.margemCoerencia;
+  const semMotivo = motivo === '' || /^[-\s]+$/.test(motivo);
+  const composto = /\+|GIP/i.test(motivo);
+  const numero = (t) => Number(String(t).replace(/\./g,'').replace(',','.'));
+  const casoPct = motivo.match(/=\s*([\d.,]+)\s*%/);
+  const casoRs  = motivo.match(/=\s*R\$\s*([\d.,]+)/);
+
+  if (semMotivo){
+    if (params.limiteVariacao > 0 && Math.abs(variacaoPct) > params.limiteVariacao){
+      return {observacao:'Salário recebido variou ' + variacaoPct.toFixed(1) + '% sem motivo lançado'};
+    }
+    return null;
+  }
+  if (!composto && casoPct){
+    const declarado = numero(casoPct[1]);
+    const distancia = Math.abs(variacaoPct - declarado);
+    if (margem > 0 && distancia > margem){
+      // percentuais ficam apenas no texto, para não misturar unidades com as colunas monetárias
+      return {observacao:'Salário recebido variou ' + variacaoPct.toFixed(2) + '%, o motivo lançado declara ' +
+                         declarado.toFixed(2) + '% (distância de ' + distancia.toFixed(2) + ' ponto(s) percentual(is))'};
+    }
+    return null;
+  }
+  if (!composto && casoRs){
+    const declarado = numero(casoRs[1]);
+    const distancia = Math.abs(variacaoAbs - declarado);
+    const limiteValor = margem / 100 * salarioAnterior;
+    if (margem > 0 && distancia > limiteValor){
+      return {informado: arred(variacaoAbs), esperado: arred(declarado), delta: arred(variacaoAbs - declarado),
+              observacao:'Salário recebido variou R$ ' + fmt(arred(variacaoAbs)) + ', o motivo lançado declara R$ ' +
+                         fmt(declarado)};
+    }
+    return null;
+  }
+  if (params.limiteVariacao > 0 && Math.abs(variacaoPct) > params.limiteVariacao){
+    return {observacao:'Salário recebido variou ' + variacaoPct.toFixed(1) +
+                       '%, motivo lançado sem percentual verificável (' + motivo + ')'};
+  }
+  return null;
+}
+
+// Monta a série mensal do salário devido a partir dos marcos do realinhamento.
+// Entre duas datas o valor se repete. Havendo duas linhas na mesma data, prevalece a última.
+// Uma data que quebra a ordem cronológica é tratada como erro de digitação do documento: o sistema
+// procura, na própria matriz, a competência em que aquele valor passa a vigorar dentro do intervalo
+// permitido pelas linhas vizinhas, registra a observação e segue com a data presumida.
+function serieDoRealinhamento(realinhamento, matrizDevido){
+  const marcos = realinhamento.marcos.map((m, i) => Object.assign({ordem:i}, m));
+  const avisos = [];
+
+  for (let i = 1; i < marcos.length; i++){
+    const ant = marcos[i-1], atual = marcos[i];
+    const chaveAnt = ant.anoEfetivo !== undefined ? ant.anoEfetivo*12+ant.mesEfetivo : ant.ano*12+ant.mes;
+    if (atual.ano*12 + atual.mes >= chaveAnt) continue;
+
+    // quebra de ordem: procura na matriz a competência em que este valor entra em vigor
+    const posterior = marcos[i+1];
+    const limiteInicio = chaveAnt + 1;
+    const limiteFim = posterior ? posterior.ano*12 + posterior.mes - 1 : chaveAnt + 240;
+    let achada = null;
+    for (let k = limiteInicio; k <= limiteFim; k++){
+      const comp = competenciaDe(Math.floor((k-1)/12), (k-1) % 12);
+      const dev = matrizDevido[comp];
+      if (dev !== undefined && Math.abs(dev - atual.valor) <= 0.01){ achada = {k, comp}; break; }
+    }
+    if (achada){
+      atual.anoEfetivo = Math.floor((achada.k-1)/12);
+      atual.mesEfetivo = ((achada.k-1) % 12) + 1;
+      atual.presumida = achada.comp;
+      avisos.push({tipo:'ordem', data: atual.data, valor: atual.valor, presumida: achada.comp,
+        texto:'Data ' + atual.data + ' quebra a ordem cronológica da tabela. Pela sequência das linhas e pelo valor de R$ ' +
+              fmt(atual.valor) + ', a competência correta é ' + achada.comp + ', adotada nesta conferência'});
+    } else {
+      avisos.push({tipo:'ordem-sem-solucao', data: atual.data, valor: atual.valor,
+        texto:'Data ' + atual.data + ' quebra a ordem cronológica e não foi possível presumir a competência correta pelo valor de R$ ' + fmt(atual.valor)});
+    }
+  }
+
+  const efetivos = marcos.map(m => ({
+    ordem: m.ordem,
+    ano: m.anoEfetivo !== undefined ? m.anoEfetivo : m.ano,
+    mes: m.mesEfetivo !== undefined ? m.mesEfetivo : m.mes,
+    valor: m.valor, motivo: m.motivo, data: m.data, presumida: m.presumida
+  })).sort((a,b) => (a.ano*12+a.mes) - (b.ano*12+b.mes) || a.ordem - b.ordem);
+
+  // datas repetidas: a última linha da data prevalece
+  const porCompetencia = new Map();
+  for (const m of efetivos){
+    const comp = competenciaDe(m.ano, m.mes - 1);
+    if (porCompetencia.has(comp)){
+      avisos.push({tipo:'repetida', data: m.data, texto:'Data ' + m.data +
+        ' aparece mais de uma vez no realinhamento. Prevalece o valor da última linha, R$ ' + fmt(m.valor)});
+    }
+    porCompetencia.set(comp, m);
+  }
+
+  const serie = {}, motivos = {};
+  const primeira = efetivos[0], ultima = efetivos[efetivos.length - 1];
+  let atual = null;
+  for (let k = primeira.ano*12 + primeira.mes; k <= (ultima.ano + 25)*12; k++){
+    const comp = competenciaDe(Math.floor((k-1)/12), (k-1) % 12);
+    if (porCompetencia.has(comp)){
+      atual = porCompetencia.get(comp);
+      motivos[comp] = atual.motivo;
+    }
+    if (atual) serie[comp] = atual.valor;
+  }
+  return {serie, motivos, avisos, marcos: efetivos};
+}
+
+function conferir(base, params){
+  const {tolerancia, limiteVariacao, inicioAno, inicioMes, inicioDia, fator} = params;
+  const ocorrencias = [];
+  const rubricas = base.rubricas;
+  const idxSalarioNomeado = rubricas.findIndex(r => normalizar(r).includes('SALARIO'));
+  const idxSalario = Math.max(0, idxSalarioNomeado);
+  const competenciaInicio = competenciaDe(inicioAno, inicioMes);
+  const idxInicio = indiceCompetencia(competenciaInicio);
+
+  let celulasConferidas = 0, rubricasProporcionais = 0, conformesR2 = 0;
+  let conferidasR5 = 0, conformesR5 = 0, conferidasR6 = 0, conformesR6 = 0;
+
+  const add = (o) => ocorrencias.push(o);
+
+  // a base do rateio da R2 e das origens é o salário: se nenhuma rubrica traz esse nome, a escolha é presumida
+  if (idxSalarioNomeado < 0){
+    add({competencia:'—', rubrica:rubricas[idxSalario], regra:'OBS', severidade:'ATENÇÃO',
+         observacao:'Nenhuma rubrica foi identificada como salário pelo nome. A conferência adotou a primeira ' +
+                    'rubrica da matriz ("' + rubricas[idxSalario] + '") como base de cálculo. Confirme se é essa ' +
+                    'a rubrica salarial antes de usar o resultado das regras R2, R5 e R6'});
+  }
+
+  // séries dos documentos de origem, quando importados
+  const matrizDevido = {};
+  base.linhas.forEach(l => { matrizDevido[l.competencia] = paraNumero((l.valores[idxSalario]||{}).DEVIDO); });
+  const evolucao = REALINHAMENTO ? serieDoRealinhamento(REALINHAMENTO, matrizDevido) : null;
+  if (evolucao){
+    evolucao.avisos.forEach(a => add({
+      competencia: a.presumida || '—', rubrica: rubricas[idxSalario], regra:'R6',
+      severidade: a.tipo === 'repetida' ? 'INFO' : 'ATENÇÃO', observacao: a.texto
+    }));
+  }
+
+  // sequência de competências
+  const indices = base.linhas.map(l => indiceCompetencia(l.competencia));
+  const vistos = new Map();
+  base.linhas.forEach((l, i) => {
+    if (vistos.has(l.competencia)) {
+      add({competencia:l.competencia, rubrica:'—', regra:'OBS', severidade:'ERRO',
+           observacao:'Competência duplicada na base'});
+    } else vistos.set(l.competencia, i);
+  });
+  for (let i = 1; i < indices.length; i++){
+    if (indices[i] === null || indices[i-1] === null) continue;
+    const salto = indices[i] - indices[i-1];
+    if (salto > 1){
+      // pode ser afastamento ou período legitimamente fora da apuração, por isso não entra como erro
+      add({competencia:base.linhas[i].competencia, rubrica:'—', regra:'OBS', severidade:'ATENÇÃO',
+           observacao:'Lacuna de ' + (salto-1) + ' competência(s) antes desta linha. Confirme se o intervalo ' +
+                      'corresponde a afastamento ou a período fora da apuração'});
+    } else if (salto < 1){
+      add({competencia:base.linhas[i].competencia, rubrica:'—', regra:'OBS', severidade:'ATENÇÃO',
+           observacao:'Competência fora de ordem cronológica'});
+    }
+  }
+
+  let salarioAnterior = null;
+  for (const linha of base.linhas){
+    const idxComp = indiceCompetencia(linha.competencia);
+    const anteriorAoInicio = (idxComp !== null && idxInicio !== null && idxComp < idxInicio);
+    const mesDeInicio = (linha.competencia === competenciaInicio);
+
+    const sal = linha.valores[idxSalario] || {};
+    const salRec = paraNumero(sal.RECEBIDO);
+    const salDev = paraNumero(sal.DEVIDO);
+
+    // variação do salário recebido confrontada com o motivo lançado
+    if (salRec !== null && salarioAnterior !== null && salarioAnterior > 0 && salRec > 0
+        && Math.abs(salRec - salarioAnterior) > 0.005){
+      const ocorrencia = avaliarVariacaoSalarial(linha, salRec, salarioAnterior, params);
+      if (ocorrencia){
+        add(Object.assign({competencia:linha.competencia, rubrica:rubricas[idxSalario], regra:'OBS',
+                           severidade:'ATENÇÃO', recebido:salRec}, ocorrencia));
+      }
+    }
+    if (salRec !== null && salRec > 0) salarioAnterior = salRec;
+
+    linha.valores.forEach((v, g) => {
+      const nome = rubricas[g];
+      const rec = paraNumero(v.RECEBIDO);
+      const dev = paraNumero(v.DEVIDO);
+      const dif = paraNumero(v.DIFERENCA);
+
+      if (rec === null || dev === null || dif === null){
+        add({competencia:linha.competencia, rubrica:nome, regra:'OBS', severidade:'ERRO',
+             observacao:'Célula ilegível: recebido "' + v.RECEBIDO + '", devido "' + v.DEVIDO + '", diferença "' + v.DIFERENCA + '"'});
+        return;
+      }
+      if (rec === 0 && dev === 0 && dif === 0) return;
+      celulasConferidas++;
+
+      // R3 — diferença negativa e devido zerado
+      if (dif < -tolerancia){
+        add({competencia:linha.competencia, rubrica:nome, regra:'R3', severidade:'ERRO',
+             recebido:rec, devido:dev, informado:dif, esperado:0, delta:dif,
+             observacao:'Diferença negativa'});
+      } else if (dev === 0 && Math.abs(dif) > tolerancia){
+        add({competencia:linha.competencia, rubrica:nome, regra:'R3', severidade:'ERRO',
+             recebido:rec, devido:dev, informado:dif, esperado:0, delta:dif,
+             observacao:'Devido zerado, diferença deveria ser zero'});
+      }
+
+      // R1 / R4 — diferença efetiva
+      if (dev !== 0){
+        const cheia = arred(dev - rec);
+        if (mesDeInicio){
+          const esperado = arred(cheia * fator);
+          const delta = arred(dif - esperado);
+          if (Math.abs(delta) > tolerancia){
+            add({competencia:linha.competencia, rubrica:nome, regra:'R4', severidade:'ERRO',
+                 recebido:rec, devido:dev, informado:dif, esperado, delta,
+                 observacao:'Mês de início: diferença deveria ser proporcional (' + params.fatorTexto + ')'});
+          }
+        } else {
+          const delta = arred(dif - cheia);
+          if (Math.abs(delta) > tolerancia){
+            add({competencia:linha.competencia, rubrica:nome, regra:'R1', severidade:'ERRO',
+                 recebido:rec, devido:dev, informado:dif, esperado:cheia, delta,
+                 observacao:'Diferença não corresponde a devido menos recebido'});
+          }
+        }
+      }
+
+      // R2 — devido proporcional
+      if (g !== idxSalario && dev !== 0){
+        if (rec === 0){
+          add({competencia:linha.competencia, rubrica:nome, regra:'R2', severidade:'ERRO',
+               recebido:rec, devido:dev, informado:dev, esperado:0, delta:dev,
+               observacao:'Devido lançado sem recebido correspondente, sem base para o rateio proporcional'});
+        } else if (salRec === null || salRec === 0){
+          add({competencia:linha.competencia, rubrica:nome, regra:'R2', severidade:'ATENÇÃO',
+               recebido:rec, devido:dev,
+               observacao:'Salário recebido zerado na competência, rateio proporcional não verificável'});
+        } else if (salDev === 0){
+          // o rateio depende do salário devido: zerado ele, a divergência está no salário e não na rubrica
+          add({competencia:linha.competencia, rubrica:nome, regra:'R2', severidade:'ATENÇÃO',
+               recebido:rec, devido:dev,
+               observacao:'Salário devido zerado na competência, rateio não verificável. Verifique antes o lançamento do salário'});
+        } else {
+          rubricasProporcionais++;
+          const esperado = arred(rec / salRec * salDev);
+          const delta = arred(dev - esperado);
+          if (Math.abs(delta) > tolerancia){
+            add({competencia:linha.competencia, rubrica:nome, regra:'R2', severidade:'ERRO',
+                 recebido:rec, devido:dev, informado:dev, esperado, delta,
+                 observacao:'Devido diverge do rateio (recebido / salário recebido) x salário devido'});
+          } else conformesR2++;
+        }
+      }
+
+      // informativo — competências anteriores ao início
+      if (anteriorAoInicio && rec > 0 && dev === 0){
+        add({competencia:linha.competencia, rubrica:nome, regra:'OBS', severidade:'INFO',
+             recebido:rec, devido:dev, informado:dif,
+             observacao:'Competência anterior ao início do período, diferença mantida em zero'});
+      }
+    });
+
+    // R5 — salário recebido confrontado com a ficha financeira
+    if (FICHA){
+      const origem = FICHA.serie[linha.competencia];
+      if (origem === undefined){
+        add({competencia:linha.competencia, rubrica:rubricas[idxSalario], regra:'R5', severidade:'INFO',
+             recebido:salRec, observacao:'Competência sem cobertura na ficha financeira, recebido não verificável'});
+      } else if (anteriorAoInicio && salRec === 0){
+        add({competencia:linha.competencia, rubrica:rubricas[idxSalario], regra:'R5', severidade:'INFO',
+             recebido:salRec, esperado:origem,
+             observacao:'Competência anterior ao início do período: a ficha registra R$ ' + fmt(origem) +
+                        ', a matriz não lança recebido'});
+      } else {
+        conferidasR5++;
+        const delta = arred(salRec - origem);
+        if (Math.abs(delta) > tolerancia){
+          add({competencia:linha.competencia, rubrica:rubricas[idxSalario], regra:'R5', severidade:'ERRO',
+               recebido:salRec, informado:salRec, esperado:origem, delta,
+               observacao:'Recebido diverge da rubrica ' + COD_SALARIO + ' da ficha financeira'});
+        } else conformesR5++;
+      }
+    }
+
+    // R6 — salário devido confrontado com a evolução do realinhamento
+    if (evolucao){
+      const origem = evolucao.serie[linha.competencia];
+      if (origem === undefined){
+        add({competencia:linha.competencia, rubrica:rubricas[idxSalario], regra:'R6', severidade:'INFO',
+             devido:salDev, observacao:'Competência fora do alcance do realinhamento, devido não verificável'});
+      } else if ((anteriorAoInicio || salDev === 0) && salDev === 0){
+        add({competencia:linha.competencia, rubrica:rubricas[idxSalario], regra:'R6', severidade:'INFO',
+             devido:salDev, esperado:origem,
+             observacao:'Competência sem devido lançado na matriz: o realinhamento indica R$ ' + fmt(origem) +
+                        ' vigente nesta data'});
+      } else {
+        conferidasR6++;
+        const delta = arred(salDev - origem);
+        if (Math.abs(delta) > tolerancia){
+          add({competencia:linha.competencia, rubrica:rubricas[idxSalario], regra:'R6', severidade:'ERRO',
+               devido:salDev, informado:salDev, esperado:origem, delta,
+               observacao:'Devido diverge da coluna Salário Simulação ECT V2 do realinhamento'});
+        } else conformesR6++;
+      }
+
+      // o motivo lançado na matriz deve acompanhar o motivo do marco do realinhamento
+      const motivoOrigem = evolucao.motivos[linha.competencia];
+      if (motivoOrigem && linha.motivo && normalizar(motivoOrigem) !== normalizar(linha.motivo)){
+        add({competencia:linha.competencia, rubrica:rubricas[idxSalario], regra:'R6', severidade:'ATENÇÃO',
+             observacao:'Motivo divergente nesta competência. Matriz: "' + linha.motivo +
+                        '". Realinhamento: "' + motivoOrigem + '"'});
+      }
+    }
+  }
+
+  // Como os identificadores são descartados na importação, o sistema não tem como saber se os três
+  // documentos pertencem ao mesmo empregado. Divergência generalizada é o indício disponível disso.
+  const alertaDeLote = (regra, conferidas, conformes, documento) => {
+    if (conferidas < 12) return;
+    const taxa = (conferidas - conformes) / conferidas;
+    if (taxa > 0.5){
+      ocorrencias.unshift({competencia:'—', rubrica:'—', regra, severidade:'ERRO',
+        observacao:'Divergência em ' + Math.round(taxa*100) + '% das competências conferidas. ' +
+                   'Verifique se ' + documento + ' corresponde ao mesmo empregado e ao mesmo lote da matriz ' +
+                   'antes de tratar as ocorrências como erro de cálculo'});
+    }
+  };
+  alertaDeLote('R5', conferidasR5, conformesR5, 'a ficha financeira importada');
+  alertaDeLote('R6', conferidasR6, conformesR6, 'o realinhamento importado');
+
+  const contar = (regra, sev) => ocorrencias.filter(o => o.regra === regra && (!sev || o.severidade === sev)).length;
+  const resumo = {
+    competencias: base.linhas.length,
+    rubricas: rubricas.length,
+    celulasConferidas,
+    rubricasProporcionais,
+    conformesR2,
+    erros: ocorrencias.filter(o => o.severidade === 'ERRO').length,
+    atencoes: ocorrencias.filter(o => o.severidade === 'ATENÇÃO').length,
+    infos: ocorrencias.filter(o => o.severidade === 'INFO').length,
+    r1: contar('R1','ERRO'), r2: contar('R2','ERRO'), r3: contar('R3','ERRO'), r4: contar('R4','ERRO'),
+    r5: contar('R5','ERRO'), r6: contar('R6','ERRO'),
+    conferidasR5, conformesR5, conferidasR6, conformesR6,
+    temFicha: !!FICHA, temRealinhamento: !!REALINHAMENTO,
+    obs: contar('OBS'),
+    primeira: base.linhas[0] ? base.linhas[0].competencia : '—',
+    ultima: base.linhas.length ? base.linhas[base.linhas.length-1].competencia : '—'
+  };
+  return {ocorrencias, resumo};
+}
+
+/* ---------- interface ---------- */
+
+const $ = (id) => document.getElementById(id);
+
+function lerParametros(){
+  const iso = $('dataInicio').value || '2005-04-05';
+  const [a,m,d] = iso.split('-').map(Number);
+  const dias = Math.min(30, 30 - d + 1);   // o dia de início integra a contagem
+  const fator = dias / 30;
+  return {
+    tolerancia: Math.max(0, Number($('tolerancia').value) || 0),
+    limiteVariacao: Math.max(0, Number($('limiteVariacao').value) || 0),   // zero desliga o alerta
+    margemCoerencia: Math.max(0, Number($('margemCoerencia').value) || 0),
+    inicioAno: a, inicioMes: m - 1, inicioDia: d,
+    fator, fatorTexto: dias + '/30'
+  };
+}
+
+function atualizarFator(){
+  const p = lerParametros();
+  $('fatorAbril').value = p.fatorTexto;
+  $('notaFator').textContent = 'Mês comercial de 30 dias, do dia ' + p.inicioDia + ' ao dia 30, inclusive';
+}
+
+function mostrarErro(msg){
+  const box = $('caixaErro');
+  box.textContent = msg;
+  box.classList.remove('oculto');
+}
+function limparErro(){ $('caixaErro').classList.add('oculto'); }
+
+// Confirmação visível da importação: a área de seleção dá lugar ao resumo do que entrou.
+const ROTULOS = {
+  matriz: {nome:'Matriz de cálculo', origem:'obrigatória para conferir'},
+  ficha: {nome:'Ficha financeira', origem:'origem do salário recebido'},
+  realinhamento: {nome:'Realinhamento', origem:'origem do salário devido'}
+};
+
+function resumoDoDocumento(tipo){
+  if (tipo === 'matriz' && BASE){
+    return BASE.linhas.length + ' competências · ' + BASE.rubricas.length + ' rubricas · ' +
+           BASE.linhas[0].competencia + ' a ' + BASE.linhas[BASE.linhas.length-1].competencia +
+           ' · ' + BASE.origem;
+  }
+  if (tipo === 'ficha' && FICHA){
+    return FICHA.competencias + ' competências · rubrica ' + COD_SALARIO + ' · ' +
+           FICHA.anos[0] + ' a ' + FICHA.anos[FICHA.anos.length-1];
+  }
+  if (tipo === 'realinhamento' && REALINHAMENTO){
+    return REALINHAMENTO.marcos.length + ' marcos de evolução · ' +
+           REALINHAMENTO.primeira + ' a ' + REALINHAMENTO.ultima;
+  }
+  return '';
+}
+
+function atualizarImportados(){
+  const tipos = ['matriz','ficha','realinhamento'];
+  const carregados = tipos.filter(t => (t === 'matriz' && BASE) || (t === 'ficha' && FICHA) || (t === 'realinhamento' && REALINHAMENTO));
+
+  $('listaImportados').innerHTML = carregados.map(t =>
+    '<div class="importado"><div class="selo">✓</div><div class="conteudo">' +
+    '<strong>' + escapar(ROTULOS[t].nome) + ' importada</strong>' +
+    '<div class="detalhes">' + escapar(resumoDoDocumento(t)) + '</div></div>' +
+    '<button type="button" class="secundario" data-remover="' + t + '">Remover</button></div>').join('');
+
+  $('listaImportados').querySelectorAll('[data-remover]').forEach(b => {
+    b.addEventListener('click', () => removerDocumento(b.getAttribute('data-remover')));
+  });
+
+  const faltando = tipos.filter(t => !carregados.includes(t));
+  $('pendentes').innerHTML = faltando.length
+    ? 'Ainda não importados: ' + faltando.map(t => '<b>' + ROTULOS[t].nome + '</b> (' + ROTULOS[t].origem + ')').join(', ') +
+      '. A conferência roda só com a matriz; os outros dois habilitam as regras R5 e R6.'
+    : 'Os três documentos foram importados. Todas as regras serão aplicadas.';
+
+  $('btnConferir').disabled = !BASE;
+  $('statusTexto').textContent = BASE
+    ? (carregados.length === 3 ? 'Pronto para conferir com as duas origens' : 'Pronto para conferir')
+    : 'Nenhum arquivo carregado';
+  if (BASE) $('blocoResultado').classList.add('oculto');
+}
+
+function removerDocumento(tipo){
+  if (tipo === 'matriz') BASE = null;
+  if (tipo === 'ficha') FICHA = null;
+  if (tipo === 'realinhamento') REALINHAMENTO = null;
+  OCORRENCIAS = []; RESUMO = null;
+  $('btnExcel').disabled = true;
+  $('blocoResultado').classList.add('oculto');
+  limparErro();
+  atualizarImportados();
+}
+
+function limparImportacao(){
+  BASE = null; FICHA = null; REALINHAMENTO = null; OCORRENCIAS = []; RESUMO = null;
+  $('btnExcel').disabled = true;
+  $('blocoResultado').classList.add('oculto');
+  limparErro();
+  atualizarImportados();
+}
+
+async function carregarArquivos(lista){
+  limparErro();
+  const arquivos = [...(lista || [])];
+  if (!arquivos.length){
+    $('statusTexto').textContent = 'Nenhum arquivo foi selecionado';
+    return;
+  }
+  const falhas = [];
+  for (const arquivo of arquivos){
+    try {
+      await carregarArquivo(arquivo);
+    } catch (e){
+      falhas.push(e && e.message ? e.message : String(e));
+    }
+  }
+  atualizarImportados();
+  if (falhas.length){
+    mostrarErro('Falha na leitura: ' + falhas.join('  |  ') +
+      '  |  Ambiente: ' + location.protocol + ' · PDF.js ' +
+      (typeof pdfjsLib === 'undefined' ? 'não carregado' : (pdfjsLib.version || 'carregado')) +
+      ' · ExcelJS ' + (typeof ExcelJS === 'undefined' ? 'não carregado' : 'carregado'));
+  }
+}
+
+async function carregarArquivo(arquivo){
+  console.info('[conferência] arquivo recebido:', arquivo.size, 'bytes, tipo', arquivo.type || '(não informado)');
+  $('statusTexto').textContent = 'Arquivo recebido (' + Math.round(arquivo.size/1024) + ' KB), lendo...';
+
+  const nome = (arquivo.name || '').toLowerCase();
+  const ehPdf = nome.endsWith('.pdf') || arquivo.type === 'application/pdf';
+  const ehXlsx = nome.endsWith('.xlsx') || nome.endsWith('.xlsm');
+  if (!ehPdf && !ehXlsx) throw new Error('formato não suportado (use PDF ou planilha .xlsx)');
+  if (arquivo.size === 0) throw new Error('o arquivo selecionado está vazio');
+
+  const buffer = await arquivo.arrayBuffer();
+  const lido = ehPdf ? await lerPdf(buffer) : await lerExcel(buffer);
+
+  if (lido.tipo === 'ficha'){ FICHA = lido; }
+  else if (lido.tipo === 'realinhamento'){ REALINHAMENTO = lido; }
+  else { BASE = lido; BASE.origem = ehPdf ? 'PDF da matriz' : 'planilha .xlsx'; }
+  // o objeto File não é retido em nenhuma variável global
+}
+
+
+
+function executarConferencia(){
+  if (!BASE) return;
+  limparErro();
+  const params = lerParametros();
+  const r = conferir(BASE, params);
+  OCORRENCIAS = r.ocorrencias;
+  RESUMO = r.resumo;
+  renderizar();
+  $('btnExcel').disabled = false;
+}
+
+function renderizar(){
+  const s = RESUMO;
+  $('blocoResultado').classList.remove('oculto');
+  $('descResultado').textContent = 'Período de ' + s.primeira + ' a ' + s.ultima + ', ' + s.competencias +
+    ' competências e ' + s.rubricas + ' rubricas. ' + s.celulasConferidas + ' células com valor foram conferidas.';
+
+  const cards = [
+    {rotulo:'Erros', valor:s.erros, classe: s.erros ? 'erro' : 'ok', detalhe:'quebras de regra'},
+    {rotulo:'Atenção', valor:s.atencoes, classe: s.atencoes ? 'atencao' : 'ok', detalhe:'padrões a revisar'},
+    {rotulo:'R1 diferença', valor:s.r1, classe: s.r1 ? 'erro' : 'ok', detalhe:'devido menos recebido'},
+    {rotulo:'R2 proporcional', valor:s.r2, classe: s.r2 ? 'erro' : 'ok', detalhe:s.conformesR2 + ' de ' + s.rubricasProporcionais + ' conformes'},
+    {rotulo:'R3 devido zero', valor:s.r3, classe: s.r3 ? 'erro' : 'ok', detalhe:'e diferenças negativas'},
+    {rotulo:'R4 mês de início', valor:s.r4, classe: s.r4 ? 'erro' : 'ok', detalhe:'proporcionalidade'},
+    {rotulo:'R5 ficha financeira', valor: s.temFicha ? s.r5 : '—',
+     classe: !s.temFicha ? 'neutro' : (s.r5 ? 'erro' : 'ok'),
+     detalhe: s.temFicha ? (s.conformesR5 + ' de ' + s.conferidasR5 + ' conferidas') : 'documento não importado'},
+    {rotulo:'R6 realinhamento', valor: s.temRealinhamento ? s.r6 : '—',
+     classe: !s.temRealinhamento ? 'neutro' : (s.r6 ? 'erro' : 'ok'),
+     detalhe: s.temRealinhamento ? (s.conformesR6 + ' de ' + s.conferidasR6 + ' conferidas') : 'documento não importado'},
+    {rotulo:'Observações', valor:s.obs, classe: s.obs ? 'neutro' : 'ok', detalhe:'estruturais'}
+  ];
+  $('cardsResumo').innerHTML = cards.map(c =>
+    '<div class="card ' + c.classe + '"><div class="rotulo">' + c.rotulo + '</div>' +
+    '<div class="valor">' + c.valor + '</div><div class="detalhe">' + c.detalhe + '</div></div>').join('');
+
+  $('resR1').textContent = s.r1 ? s.r1 + ' ocorrência(s)' : 'conforme';
+  $('resR2').textContent = s.r2 ? s.r2 + ' ocorrência(s)' : 'conforme';
+  $('resR3').textContent = s.r3 ? s.r3 + ' ocorrência(s)' : 'conforme';
+  $('resR4').textContent = s.r4 ? s.r4 + ' ocorrência(s)' : 'conforme';
+  $('resR5').textContent = !s.temFicha ? 'ficha não importada' : (s.r5 ? s.r5 + ' ocorrência(s)' : 'conforme');
+  $('resR6').textContent = !s.temRealinhamento ? 'realinhamento não importado' : (s.r6 ? s.r6 + ' ocorrência(s)' : 'conforme');
+  $('resOBS').textContent = s.obs ? s.obs + ' anotação(ões)' : 'nada a registrar';
+
+  const regras = [...new Set(OCORRENCIAS.map(o => o.regra))].sort();
+  $('filtroRegra').innerHTML = '<option value="">Todas</option>' + regras.map(r => '<option>' + escapar(r) + '</option>').join('');
+  const rubricas = [...new Set(OCORRENCIAS.map(o => o.rubrica))].sort();
+  $('filtroRubrica').innerHTML = '<option value="">Todas</option>' + rubricas.map(r => '<option>' + escapar(r) + '</option>').join('');
+
+  renderizarTabela();
+}
+
+function ocorrenciasFiltradas(){
+  const sev = $('filtroSeveridade').value;
+  const reg = $('filtroRegra').value;
+  const rub = $('filtroRubrica').value;
+  const busca = $('filtroBusca').value.trim().toLowerCase();
+  return OCORRENCIAS.filter(o =>
+    (!sev || o.severidade === sev) &&
+    (!reg || o.regra === reg) &&
+    (!rub || o.rubrica === rub) &&
+    (!busca || o.competencia.includes(busca)));
+}
+
+function renderizarTabela(){
+  const lista = ocorrenciasFiltradas();
+  const classeTag = (s) => s === 'ERRO' ? 'erro' : (s === 'ATENÇÃO' ? 'atencao' : 'info');
+  $('corpoTabela').innerHTML = lista.length ? lista.map(o =>
+    '<tr>' +
+    '<td>' + escapar(o.competencia) + '</td>' +
+    '<td>' + escapar(o.rubrica) + '</td>' +
+    '<td><span class="tag ' + classeTag(o.severidade) + '">' + escapar(o.regra) + '</span></td>' +
+    '<td>' + escapar(o.severidade) + '</td>' +
+    '<td class="num">' + fmt(o.recebido) + '</td>' +
+    '<td class="num">' + fmt(o.devido) + '</td>' +
+    '<td class="num">' + fmt(o.informado) + '</td>' +
+    '<td class="num">' + fmt(o.esperado) + '</td>' +
+    '<td class="num">' + fmt(o.delta) + '</td>' +
+    '<td>' + escapar(o.observacao) + '</td>' +
+    '</tr>').join('')
+    : '<tr><td colspan="10" style="text-align:center;padding:26px;color:var(--texto-suave)">Nenhuma ocorrência com os filtros atuais.</td></tr>';
+  $('contadorTabela').textContent = lista.length + ' de ' + OCORRENCIAS.length + ' ocorrências exibidas';
+}
+
+/* ---------- exportação ---------- */
+
+async function exportarExcel(){
+  if (!RESUMO) return;
+  const rotulo = ($('rotuloCaso').value || 'Conferência').trim();
+  const params = lerParametros();
+  const wb = new ExcelJS.Workbook();
+  wb.creator = 'Sistema Jurídico Costa Nunes';
+  wb.created = new Date();
+
+  const fonte = {name:'Arial', size:10};
+  const cabecalho = {font:{name:'Arial', size:10, bold:true, color:{argb:'FFFFFFFF'}},
+                     fill:{type:'pattern', pattern:'solid', fgColor:{argb:'FF0A0A0A'}},
+                     alignment:{vertical:'middle', wrapText:true}};
+
+  // Resumo
+  const ws1 = wb.addWorksheet('Resumo');
+  ws1.columns = [{width:42},{width:46}];
+  const linhasResumo = [
+    ['Conferência de matriz de cálculo', ''],
+    ['Rótulo do caso', rotulo],
+    ['Gerado em', new Date().toLocaleString('pt-BR')],
+    ['Módulo', 'Conferência de Matriz v' + VERSAO],
+    ['Margem de coerência do motivo', params.margemCoerencia + ' ponto(s) percentual(is)'],
+    ['', ''],
+    ['Período', RESUMO.primeira + ' a ' + RESUMO.ultima],
+    ['Competências', RESUMO.competencias],
+    ['Rubricas', RESUMO.rubricas],
+    ['Células com valor conferidas', RESUMO.celulasConferidas],
+    ['Tolerância aplicada (R$)', params.tolerancia],
+    ['Início do período', String(params.inicioDia).padStart(2,'0') + '/' + String(params.inicioMes+1).padStart(2,'0') + '/' + params.inicioAno],
+    ['Fator do mês de início', params.fatorTexto],
+    ['', ''],
+    ['R1 diferença igual a devido menos recebido', RESUMO.r1 ? RESUMO.r1 + ' ocorrência(s)' : 'conforme'],
+    ['R2 devido igual ao rateio proporcional', RESUMO.r2 ? RESUMO.r2 + ' ocorrência(s)' : 'conforme (' + RESUMO.conformesR2 + ' de ' + RESUMO.rubricasProporcionais + ')'],
+    ['R3 devido zerado e diferenças negativas', RESUMO.r3 ? RESUMO.r3 + ' ocorrência(s)' : 'conforme'],
+    ['R4 proporcionalidade do mês de início', RESUMO.r4 ? RESUMO.r4 + ' ocorrência(s)' : 'conforme'],
+    ['R5 recebido contra a ficha financeira', !RESUMO.temFicha ? 'ficha não importada'
+      : (RESUMO.r5 ? RESUMO.r5 + ' ocorrência(s)' : 'conforme (' + RESUMO.conformesR5 + ' de ' + RESUMO.conferidasR5 + ')')],
+    ['R6 devido contra o realinhamento', !RESUMO.temRealinhamento ? 'realinhamento não importado'
+      : (RESUMO.r6 ? RESUMO.r6 + ' ocorrência(s)' : 'conforme (' + RESUMO.conformesR6 + ' de ' + RESUMO.conferidasR6 + ')')],
+    ['Observações estruturais', RESUMO.obs],
+    ['', ''],
+    ['Documentos de origem', (RESUMO.temFicha ? 'ficha financeira importada' : 'ficha financeira ausente') + '; ' +
+      (RESUMO.temRealinhamento ? 'realinhamento importado' : 'realinhamento ausente')],
+    ['Leitura da aba Conferência completa', 'A coluna Diferença calculada aplica a R3 (devido zerado resulta em diferença zero) e o fator do mês de início. A coluna Devido esperado usa o rateio da R2 sobre o salário da própria competência. Ambas são fórmulas vivas e recalculam ao editar os valores.'],
+    ['Tratamento de dados', 'Processamento local. Nome, CPF, PIS/NIT, matrícula e número do relatório não foram carregados nem constam deste arquivo.']
+  ];
+  linhasResumo.forEach((l, i) => {
+    const row = ws1.addRow(l);
+    row.getCell(1).font = i === 0 ? {name:'Arial', size:12, bold:true} : {name:'Arial', size:10, bold:true};
+    row.getCell(2).font = fonte;
+    row.getCell(2).alignment = {wrapText:true, vertical:'top'};
+  });
+
+  // Ocorrências
+  const ws2 = wb.addWorksheet('Ocorrências');
+  ws2.columns = [
+    {header:'Competência', key:'competencia', width:14},
+    {header:'Rubrica', key:'rubrica', width:26},
+    {header:'Regra', key:'regra', width:8},
+    {header:'Severidade', key:'severidade', width:12},
+    {header:'Recebido', key:'recebido', width:13},
+    {header:'Devido', key:'devido', width:13},
+    {header:'Informado', key:'informado', width:13},
+    {header:'Esperado', key:'esperado', width:13},
+    {header:'Delta', key:'delta', width:13},
+    {header:'Observação', key:'observacao', width:58}
+  ];
+  ws2.getRow(1).eachCell(c => Object.assign(c, cabecalho));
+  OCORRENCIAS.forEach(o => {
+    const row = ws2.addRow({
+      competencia:o.competencia, rubrica:o.rubrica, regra:o.regra, severidade:o.severidade,
+      recebido:o.recebido ?? null, devido:o.devido ?? null, informado:o.informado ?? null,
+      esperado:o.esperado ?? null, delta:o.delta ?? null, observacao:o.observacao
+    });
+    row.eachCell(c => c.font = fonte);
+    [5,6,7,8,9].forEach(i => row.getCell(i).numFmt = '#,##0.00');
+    if (o.severidade === 'ERRO'){
+      row.eachCell(c => c.fill = {type:'pattern', pattern:'solid', fgColor:{argb:'FFF8E8EA'}});
+    } else if (o.severidade === 'ATENÇÃO'){
+      row.eachCell(c => c.fill = {type:'pattern', pattern:'solid', fgColor:{argb:'FFFBF3DD'}});
+    }
+  });
+  ws2.views = [{state:'frozen', ySplit:1}];
+  ws2.autoFilter = {from:'A1', to:'J1'};
+
+  // Conferência completa
+  const ws3 = wb.addWorksheet('Conferência completa');
+  ws3.columns = [
+    {header:'Competência', key:'c', width:14},
+    {header:'Motivo', key:'m', width:34},
+    {header:'Rubrica', key:'r', width:26},
+    {header:'Recebido', key:'rec', width:13},
+    {header:'Devido', key:'dev', width:13},
+    {header:'Diferença informada', key:'dif', width:17},
+    {header:'Diferença calculada', key:'calc', width:17},
+    {header:'Delta', key:'delta', width:13},
+    {header:'Devido esperado (rateio)', key:'esp', width:20},
+    {header:'Status diferença', key:'st', width:15},
+    {header:'Status rateio', key:'st2', width:14},
+    {header:'Recebido na ficha', key:'of', width:16},
+    {header:'Devido no realinhamento', key:'orl', width:20},
+    {header:'Status origens', key:'st3', width:15}
+  ];
+  ws3.getRow(1).eachCell(c => Object.assign(c, cabecalho));
+
+  const idxSalario = Math.max(0, BASE.rubricas.findIndex(r => normalizar(r).includes('SALARIO')));
+  const competenciaInicio = competenciaDe(params.inicioAno, params.inicioMes);
+  const tol = params.tolerancia;
+  const matrizDevidoExp = {};
+  BASE.linhas.forEach(l => { matrizDevidoExp[l.competencia] = paraNumero((l.valores[idxSalario]||{}).DEVIDO); });
+  const evolucaoExp = REALINHAMENTO ? serieDoRealinhamento(REALINHAMENTO, matrizDevidoExp) : null;
+  let linhaExcel = 2;
+  for (const linha of BASE.linhas){
+    const linhaSalario = linhaExcel + idxSalario;   // linha do salário dentro deste bloco de competência
+    const fatorLinha = (linha.competencia === competenciaInicio) ? params.fator : 1;
+    linha.valores.forEach((v, g) => {
+      const rec = paraNumero(v.RECEBIDO) || 0;
+      const dev = paraNumero(v.DEVIDO) || 0;
+      const dif = paraNumero(v.DIFERENCA) || 0;
+      const L = linhaExcel, S = linhaSalario;
+      const row = ws3.addRow({
+        c: linha.competencia, m: linha.motivo, r: BASE.rubricas[g],
+        rec, dev, dif,
+        calc: {formula:'IF(E' + L + '=0,0,ROUND((E' + L + '-D' + L + ')*' + fatorLinha.toFixed(6) + ',2))'},
+        delta: {formula:'F' + L + '-G' + L},
+        esp: (g === idxSalario)
+              ? null
+              : {formula:'IF(D' + S + '=0,"",ROUND(D' + L + '/D' + S + '*E' + S + ',2))'},
+        st:  {formula:'IF(ABS(H' + L + ')>' + tol + ',"DIVERGENTE","OK")'},
+        st2: (g === idxSalario)
+              ? null
+              : {formula:'IF(OR(I' + L + '="",D' + L + '=0),"—",IF(ABS(E' + L + '-I' + L + ')>' + tol + ',"DIVERGENTE","OK"))'},
+        // as origens só se aplicam à linha do salário
+        of:  (g === idxSalario && FICHA && FICHA.serie[linha.competencia] !== undefined)
+              ? FICHA.serie[linha.competencia] : null,
+        orl: (g === idxSalario && evolucaoExp && evolucaoExp.serie[linha.competencia] !== undefined)
+              ? evolucaoExp.serie[linha.competencia] : null,
+        // fora do período apurado a matriz não lança valor, e nesse caso não há o que confrontar
+        st3: (g === idxSalario && (FICHA || evolucaoExp))
+              ? {formula:'IF(OR(AND(L' + L + '<>"",D' + L + '<>0,ABS(D' + L + '-L' + L + ')>' + tol + '),' +
+                            'AND(M' + L + '<>"",E' + L + '<>0,ABS(E' + L + '-M' + L + ')>' + tol + ')),"DIVERGENTE",' +
+                         'IF(AND(OR(L' + L + '="",D' + L + '=0),OR(M' + L + '="",E' + L + '=0)),"—","OK"))'}
+              : null
+      });
+      row.eachCell(c => c.font = fonte);
+      [4,5,6,7,8,9,12,13].forEach(i => row.getCell(i).numFmt = '#,##0.00');
+      linhaExcel++;
+    });
+  }
+  ws3.views = [{state:'frozen', ySplit:1}];
+
+  const buffer = await wb.xlsx.writeBuffer();
+  const blob = new Blob([buffer], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'conferencia_' + rotulo.replace(/[^\w\-]+/g,'_').toLowerCase() + '.xlsx';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+
+/* ---------- eventos ---------- */
+
+document.addEventListener('DOMContentLoaded', () => {
+  $('badgeVersao').textContent = 'v' + VERSAO;
+  const dz = $('dropzone'), input = $('inputArquivo');
+  // a área é um <label for>, então o próprio HTML abre o seletor;
+  // o clique do input não pode voltar ao label, sob pena de reabrir o seletor em laço
+  input.addEventListener('click', e => e.stopPropagation());
+  input.addEventListener('change', e => {
+    const arquivos = e.target.files;
+    carregarArquivos(arquivos);
+    input.value = '';
+  });
+  ['dragenter','dragover'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add('ativo'); }));
+  ['dragleave','drop'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove('ativo'); }));
+  dz.addEventListener('drop', e => { if (e.dataTransfer.files.length) carregarArquivos(e.dataTransfer.files); });
+
+  $('btnConferir').addEventListener('click', executarConferencia);
+  $('btnExcel').addEventListener('click', exportarExcel);
+  $('dataInicio').addEventListener('change', atualizarFator);
+  ['filtroSeveridade','filtroRegra','filtroRubrica'].forEach(id => $(id).addEventListener('change', renderizarTabela));
+  $('filtroBusca').addEventListener('input', renderizarTabela);
+  atualizarFator();
+
+  atualizarImportados();
+  atualizarPainelAmbiente();
+  garantirBibliotecas();
+});
+</script>
+</body>
+</html>
